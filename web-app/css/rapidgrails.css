@@ -1,0 +1,43 @@
+body {
+    font-size:62.5%
+}
+.editor {
+    margin-bottom: 12px;
+    padding: 0.4em;
+    width: 95%;
+}
+form>fieldset>label, form>fieldset>input {
+    display: block;
+}
+input.text {
+    margin-bottom: 12px;
+    padding: 0.4em;
+    width: 95%;
+}
+input[type='checkbox'] {
+    margin: 5px;
+}
+fieldset {
+    border: 0 none;
+    margin-top: 25px;
+    padding: 0;
+}
+h1 {
+    font-size: 1.2em;
+    margin: 0.6em 0;
+}
+.ui-dialog .ui-state-error {
+    padding: 0.3em;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    left: 0.3em;
+}
+
+.validateTips {
+    border: 1px solid transparent;
+    padding: 0.3em;
+}
+ul.CheckBoxList li{
+    display: block;
+}
