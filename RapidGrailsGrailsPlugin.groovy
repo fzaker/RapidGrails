@@ -1,3 +1,6 @@
+import org.codehaus.groovy.grails.plugins.web.api.ControllersApi
+import rapidgrails.CompositeHelper
+
 class RapidGrailsGrailsPlugin {
     // the plugin version
     def version = "0.1"
@@ -52,6 +55,9 @@ Brief summary/description of the plugin.
 
     def doWithApplicationContext = { applicationContext ->
         // TODO Implement post initialization spring config (optional)
+        application.controllerClasses.each { controller ->
+            controller.metaClass.mixin(CompositeHelper.class)
+        }
     }
 
     def onChange = { event ->

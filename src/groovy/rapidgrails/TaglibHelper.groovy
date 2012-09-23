@@ -20,9 +20,9 @@ class TaglibHelper {
         def excludedProperties = ["id", "version"]
 
         def props = []
-        domainClass.persistentProperties.each { GrailsDomainClassProperty p ->
-            if (!excludedProperties.contains(p.name)) {
-                props << p
+        domainClass.constraints.keySet().each {
+            if (!excludedProperties.contains(it)) {
+                props << domainClass.propertyMap[it]
             }
         }
         props
