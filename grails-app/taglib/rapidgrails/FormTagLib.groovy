@@ -48,10 +48,15 @@ class FormTagLib {
         out << g.hiddenField(name: 'deleted', value: compositeInstance.deleted).replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
         out << g.hiddenField(name: 'new', value: compositeInstance?.id == null? 'true': 'false').replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
 
-        def excludedProperties = ["deleted", "indx", compositeInstance.belongsTo.keySet().find()]
+        def excludedProperties = ["deleted", "indx"]
+        def excludedTypes = []
+        if (compositeInstance.belongsTo instanceof Map)
+            compositeInstance.belongsTo.each { excludedProperties << it.key}
+        else if (compositeInstance.belongsTo instanceof List)
+            excludedTypes = compositeInstance.belongsTo
 
         props.each { p ->
-            if (!excludedProperties.contains(p.name)) {
+            if ((!excludedProperties.contains(p.name)) && (!excludedTypes.contains(p.type))) {
                 def field = f.field(bean: compositeInstance, property: p.name)
                 out << field.replaceAll("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
             }
