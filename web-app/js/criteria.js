@@ -6,25 +6,25 @@
 //    };
 //})(jQuery);
 
-var loadGrid = function(group, gridId) {
+var loadGrid = function (group, gridId) {
     var eleman = $("#" + group);
     var criteria = getCriteria(eleman);
     var grid = $("#" + gridId);
     var url = grid.getGridParam('url');
     var newUrl = setUrlParam(url, "filter", $.toJSON(criteria));
-    grid.setGridParam({url : newUrl});
+    grid.setGridParam({url:newUrl});
     grid.trigger("reloadGrid");
 }
 
-var loadGridWithCriteria = function(gridId, criteria) {
+var loadGridWithCriteria = function (gridId, criteria) {
     var grid = $("#" + gridId);
     var url = grid.getGridParam('url');
     var newUrl = setUrlParam(url, "filter", criteria);
-    grid.setGridParam({url : newUrl});
+    grid.setGridParam({url:newUrl});
     grid.trigger("reloadGrid");
 }
 
-var getCriteria = function(eleman) {
+var getCriteria = function (eleman) {
     var result = getCriteriaRecursive(eleman);
     if (!result)
         result = [];
@@ -36,11 +36,11 @@ var getCriteria = function(eleman) {
     return result;
 }
 
-var getCriteriaRecursive = function(eleman) {
+var getCriteriaRecursive = function (eleman) {
     var criteria;
 
     var childCriteriaList = [];
-    eleman.children().each(function() {
+    eleman.children().each(function () {
         var childCriteria = getCriteriaRecursive($(this));
         if (childCriteria)
             childCriteriaList.push(childCriteria);
@@ -51,6 +51,8 @@ var getCriteriaRecursive = function(eleman) {
         criteria = {};
         criteria.op = op;
         var v = $(eleman).val();
+        if (op == 'like')
+            v = '%25'+v+'%25';
         var f = $(eleman).attr("name");
 
         if (v && f) {

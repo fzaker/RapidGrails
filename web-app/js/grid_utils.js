@@ -32,7 +32,7 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback,loadCallbac
     }).done(function (response) {
             var r = $("#ajax-form"+remoteAddress.hashCode());
             if (!r.length)
-                r = $("<form id='ajax-form"+remoteAddress.hashCode()+"' enctype='multipart/form-data'></form>")
+                r = $("<form id='ajax-form"+remoteAddress.hashCode()+"' enctype='multipart/form-data' action='"+saveAddress+"'></form>")
             r.html("")
 
             r.dialog({
@@ -47,6 +47,9 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback,loadCallbac
                                 if(resp==0 || typeof resp == 'object'){
                                     if (saveCallback)
                                         saveCallback(resp)
+                                    var r= $("#ajax-form"+remoteAddress.hashCode());
+                                    r.dialog("destroy");
+                                    r.remove()
                                 }else{
                                     var r= $("#ajax-form"+remoteAddress.hashCode());
                                     r.html(resp);
