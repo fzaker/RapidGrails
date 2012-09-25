@@ -14,9 +14,13 @@ class CompositeHelper {
             instance."${composite}".eachWithIndex() { o, i ->
                 if (o) {
                     o.indx = i
-                    if (!parentPropertyName)
-                        parentPropertyName = o.belongsTo.keySet().find()
-                    o."${parentPropertyName}" = instance
+//                    if (!parentPropertyName) {
+//                        if (o.belongsTo instanceof Map)
+//                            parentPropertyName = o.belongsTo.find {entry -> entry.value == instance.class}.key
+//                        else if (o.belongsTo instanceof List)
+//                            parentPropertyName = o.properties.find { it.type == instance.type }
+//                    }
+//                    o."${parentPropertyName}" = instance
                 }
             }
         }
