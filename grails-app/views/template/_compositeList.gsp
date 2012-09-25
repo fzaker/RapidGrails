@@ -51,7 +51,7 @@
 <g:render template="/template/compositeItem" model="${[instance: instance, i:'_clone', name: compositeProperty, hidden: true]}" />
 <script type="text/javascript">
     $(document).ready(function() {
-        alert("Hi");
+//        alert("Hi");
         var clone = $("#${compositeProperty}_clone");
         var formParent = $("form").has(clone).parent();
         var clones = formParent.find("#${compositeProperty}_clone");
