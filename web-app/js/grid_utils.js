@@ -13,26 +13,26 @@ $.fn.serializeObject = function () {
     });
     return o;
 };
-String.prototype.hashCode = function(){
+String.prototype.hashCode = function () {
     var hash = 0, i, char;
     if (this.length == 0) return hash;
     for (i = 0; i < this.length; i++) {
         char = this.charCodeAt(i);
-        hash = ((hash<<5)-hash)+char;
+        hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
 };
 
-var loadOverlay = function (remoteAddress, saveAddress, saveCallback,loadCallback) {
-    $.ajaxSettings.traditional=true;
+var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallback, params) {
+    $.ajaxSettings.traditional = true;
     $.ajax({
         type:"GET",
         url:remoteAddress
     }).done(function (response) {
-            var r = $("#ajax-form"+remoteAddress.hashCode());
+            var r = $("#ajax-form" + remoteAddress.hashCode());
             if (!r.length)
-                r = $("<form id='ajax-form"+remoteAddress.hashCode()+"' enctype='multipart/form-data' action='"+saveAddress+"'></form>")
+                r = $("<form id='ajax-form" + remoteAddress.hashCode() + "' enctype='multipart/form-data' action='" + saveAddress + "'></form>")
             r.html("")
 
             r.dialog({
@@ -43,15 +43,17 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback,loadCallbac
                         r.ajaxSubmit({
                             url:saveAddress,
                             type:"post",
-                            success:function(resp){
-                                if(resp==0 || typeof resp == 'object'){
+                            success:function (resp) {
+                                if(params && params.afterSave)
+                                    params.afterSave(resp)
+                                if (resp == 0 || typeof resp == 'object') {
                                     if (saveCallback)
                                         saveCallback(resp)
-                                    var r= $("#ajax-form"+remoteAddress.hashCode());
+                                    var r = $("#ajax-form" + remoteAddress.hashCode());
                                     r.dialog("destroy");
                                     r.remove()
-                                }else{
-                                    var r= $("#ajax-form"+remoteAddress.hashCode());
+                                } else {
+                                    var r = $("#ajax-form" + remoteAddress.hashCode());
                                     r.html(resp);
                                     r.dialog("open");
                                 }
@@ -67,8 +69,13 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback,loadCallbac
                     r.html("")
                 }
             })
+            if (params && params.width) {
+                r.dialog("option", "width", params.width)
+                r.dialog("option", "position", "top")
+            }
+
             r.append(response);
-            if(loadCallback)
+            if (loadCallback)
                 loadCallback(response);
         });
 }
