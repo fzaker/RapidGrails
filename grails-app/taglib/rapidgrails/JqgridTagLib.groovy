@@ -142,9 +142,18 @@ class JqgridTagLib {
             if(attrs.onSelectRow)
                 onSelectRow += "${attrs.onSelectRow}(rowId);"
             if(attrs.childGrid){
-                def criteria = "'[{\\\'op\\\':\\\'eq\\\', \\\'field\\\':\\\'${attrs.fieldInChild}.id\\\', \\\'val\\\':\\\'' + rowId + '\\\'}]'"
-                def handler = "loadGridWithCriteria('${attrs.childGrid}Grid', ${criteria})"
-                onSelectRow += handler
+                if(attrs.childGrid instanceof Map){
+                    attrs.childGrid.each {childGrid,fieldInChild->
+                        def criteria = "'[{\\\'op\\\':\\\'eq\\\', \\\'field\\\':\\\'${fieldInChild}.id\\\', \\\'val\\\':\\\'' + rowId + '\\\'}]'"
+                        def handler = "loadGridWithCriteria('${childGrid}Grid', ${criteria});"
+                        onSelectRow += handler
+                    }
+                }
+                else{
+                    def criteria = "'[{\\\'op\\\':\\\'eq\\\', \\\'field\\\':\\\'${attrs.fieldInChild}.id\\\', \\\'val\\\':\\\'' + rowId + '\\\'}]'"
+                    def handler = "loadGridWithCriteria('${attrs.childGrid}Grid', ${criteria})"
+                    onSelectRow += handler
+                }
             }
             onSelectRow += "},"
         }
@@ -200,8 +209,10 @@ class JqgridTagLib {
                 colModel:${colModel as JSON},
                 rowList:[10,20,30,50,100,500],
                 pager: '#${domainClass.shortName}${attrs.idPostfix?:""}Pager',
+                ${attrs.sortname?"sortname:'"+attrs.sortname+"',":''}
                 //sortname: 'id',
                 viewrecords: true,
+                ${attrs.sortorder?"sortorder:'"+attrs.sortorder+"',":''}
                 //sortorder: "asc",
                 autowidth: true,
                 height: "100%",
@@ -232,23 +243,25 @@ class JqgridTagLib {
         """
 
         attrs.commands?.each {
+            def iconTitle=it.title?:message(code: it.icon)
             if (it.handler) {
                 def handler = it.handler.replaceAll("#id#", "\" + cellvalue + \"")
-                out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:${handler}\\"><img src=\\"${fam.icon(name: it.icon)}\\"/></a>";"""
+                out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:${handler}\\"><img src=\\"${fam.icon(name: it.icon)}\\" title=\\"${iconTitle}\\"/></a>";"""
             }
             else if (it.loadOverlay) {
                 def remoteAddress = "'" + it.loadOverlay.replaceAll("#id#", "\" + cellvalue + \"") + "'"
                 def loadCallback=it.loadCallback?","+it.loadCallback:""
-                out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:loadOverlay(${remoteAddress},'${it.saveAction}',function(){\$('#${domainClass.shortName}${attrs.idPostfix?:""}Grid').trigger('reloadGrid')}${loadCallback})\\"><img src=\\"${fam.icon(name: it.icon)}\\"/></a>";"""
+                def saveCallback=it.saveCallback?it.saveCallback:"function(){\$('#${domainClass.shortName}${attrs.idPostfix?:""}Grid').trigger('reloadGrid')}"
+                out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:loadOverlay(${remoteAddress},'${it.saveAction}',${saveCallback}${loadCallback})\\"><img src=\\"${fam.icon(name: it.icon)}\\"  title=\\"${iconTitle}\\"/></a>";"""
             }
             else if (it.childGrid) {
                 def criteria = "'[{\\\\\'op\\\\\':\\\\\'eq\\\\\', \\\\\'field\\\\\':\\\\\'${it.fieldInChild}.id\\\\\', \\\\\'val\\\\\':\\\\\'\" + cellvalue + \"\\\\\'}]'"
                 def handler = "loadGridWithCriteria('${it.childGrid}Grid', ${criteria})"
-                out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:${handler}\\"><img src=\\"${fam.icon(name: it.icon)}\\"/></a>";"""
+                out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:${handler}\\"><img src=\\"${fam.icon(name: it.icon)}\\"  title=\\"${iconTitle}\\"/></a>";"""
             }
             else {
                 def param = it.param.replaceAll("#id#", "\" + cellvalue + \"")
-                out << """r = r + "<a style='margin-right:3px;' href=\\"${g.createLink(controller: it.controller, action: it.action) + "?" + param}\\"><img src=\\"${fam.icon(name: it.icon)}\\"/></a>";"""
+                out << """r = r + "<a style='margin-right:3px;' href=\\"${g.createLink(controller: it.controller, action: it.action) + "?" + param}\\"><img src=\\"${fam.icon(name: it.icon)}\\" title=\\"${iconTitle}\\" /></a>";"""
             }
         }
 
