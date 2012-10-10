@@ -40,6 +40,8 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
                 resizable:false,
                 buttons:{
                     'ذخیره':function () {
+                        if(params && params.beforeSubmit)
+                            params.beforeSubmit();
                         r.ajaxSubmit({
                             url:saveAddress,
                             type:"post",
