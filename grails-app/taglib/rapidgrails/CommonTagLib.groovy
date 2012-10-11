@@ -73,11 +73,12 @@ class CommonTagLib {
             // but grails does not recognize index suffix in the name as an array:
             //      cname = "${attrs.name}[${idx++}]"
             //      and put this inside the li: <label for='$cname'>...</label>
+            def val=(attrs.optionKey && obj.hasProperty(attrs.optionKey))?obj."${attrs.optionKey}":obj
 
-            isChecked = (value?.contains(obj."${attrs.optionKey}"))? true: false
+            isChecked = (value?.contains(val))? true: false
 
             out << "<li>" <<
-                    checkBox(name:cname, value:obj."${attrs.optionKey}", checked: isChecked) <<
+                    checkBox(name:cname, value:val, checked: isChecked) <<
                     "${translate?message(code: obj.toString()):obj}" << "</li>"
         }
         out << "</ul>"
