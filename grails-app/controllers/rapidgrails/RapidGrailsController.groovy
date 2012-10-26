@@ -81,7 +81,13 @@ class RapidGrailsController {
                                     }
                                     else { // The simple case, f.field is direct field of the class
                                         def property = _domainClass.getPropertyByName(f.field)
-                                        v = property.type.newInstance(f.val)
+                                        def type=property.type
+                                        if(type.toString().equals("boolean"))
+                                            v =f.val as Boolean
+                                        else if(type.toString().equals("int"))
+                                            v = f.val as Integer
+                                        else
+                                            v = property.type.newInstance(f.val)
                                     }
                                     "${f.op}"(f.field, v)
                                 }

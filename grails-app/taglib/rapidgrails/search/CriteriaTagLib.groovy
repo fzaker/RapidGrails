@@ -31,6 +31,12 @@ class CriteriaTagLib {
     def eq = { attrs, body ->
         searchTextBox(attrs, "eq")
     }
+    def gt = { attrs, body ->
+        searchTextBox(attrs, "gt")
+    }
+    def lt = { attrs, body ->
+        searchTextBox(attrs, "lt")
+    }
 
     def like = { attrs, body ->
         searchTextBox(attrs, "like")

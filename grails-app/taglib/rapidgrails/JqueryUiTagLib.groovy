@@ -131,8 +131,10 @@ class JqueryUiTagLib {
                             jQuery("#${selector}_year").val(dt.getFullYear());
                             jQuery("#${selector}_month").val(dt.getMonth() + 1);
                             jQuery("#${selector}_day").val(dt.getDate());
+                            jQuery('#${selector}_control').change();
                         }
                     });
+                    ${attrs.required?"jQuery('#${selector}_control').change(function(){if(\$(this).val()){\$(this).removeClass('invalid')}else{\$(this).addClass('invalid')}});jQuery('#${selector}_control').change();":""}
                 ${already ? "" : "});"}
             </script>
             <input type="hidden" value="date.struct" id="${attrs.id?:attrs.name}" name="${attrs.name}"/>
