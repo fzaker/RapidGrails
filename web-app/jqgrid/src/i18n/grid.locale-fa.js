@@ -7,7 +7,7 @@
 **/
 	$.jgrid = {
         defaults: {
-            recordtext: "نمابش {0} - {1} از {2}",
+            recordtext: "نمایش {0} - {1} از <span>{2}</span>",
             emptyrecords: "رکوردی یافت نشد",
             loadtext: "بارگزاري...",
             pgtext: "صفحه {0} از {1}"

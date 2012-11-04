@@ -25,6 +25,8 @@ String.prototype.hashCode = function () {
 };
 
 var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallback, params) {
+    if(!params)
+        params={}
     $.ajaxSettings.traditional = true;
     $.ajax({
         type:"GET",
@@ -37,6 +39,7 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
 
             r.dialog({
                 modal:true,
+                width:params.width,
                 resizable:false,
                 buttons:{
                     'ذخیره':function () {

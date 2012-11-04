@@ -9,7 +9,7 @@ class CriteriaTagLib {
         def gridParams = request.getAttribute("gridParams")
         if (gridParams == null) {
             out << "<div id='criteria_${attrs.id ?: ""}'>"
-            out << "<fieldset class='form'>"
+            out << "<fieldset class='form ${attrs.inline ? 'inline' : ''}'>"
 
             request.setAttribute("group", "criteria_${attrs.id ?: ""}")
             out << body.call()
@@ -29,17 +29,20 @@ class CriteriaTagLib {
     }
 
     def eq = { attrs, body ->
-        searchTextBox(attrs, "eq")
+        searchBox(attrs, "eq")
+    }
+    def ne = { attrs, body ->
+        searchBox(attrs, "ne")
     }
     def gt = { attrs, body ->
-        searchTextBox(attrs, "gt")
+        searchBox(attrs, "gt")
     }
     def lt = { attrs, body ->
-        searchTextBox(attrs, "lt")
+        searchBox(attrs, "lt")
     }
 
     def like = { attrs, body ->
-        searchTextBox(attrs, "like")
+        searchBox(attrs, "like")
     }
 
     def and = { attrs, body ->
@@ -75,22 +78,20 @@ class CriteriaTagLib {
         }
     }
 
-    private void searchTextBox(attrs, operator) {
+    private void searchBox(attrs, operator) {
         def gridParams = request.getAttribute("gridParams")
         if (gridParams == null) {
             def group = request.getAttribute("group")
             def labelMsg = attrs.label ?: attrs.name
             def label = g.message(code: labelMsg, default: labelMsg)
-
+            def name = attrs.name
             def hidden = TaglibHelper.getBooleanAttribute(attrs, "hidden")
-            if (!hidden) {
-                out << "<div class='fieldcontain'>"
-                out << "<label for='${attrs.name}'>${label}</label>"
-            }
-            out << "<input type='${hidden ? "hidden" : "text"}' id='${attrs.name}' name='${attrs.name}' op='${operator}' group='${group}' value='${attrs.value ?: ""}' />"
-            if (!hidden) {
-                out << "</div>"
-            }
+            def value = attrs.value
+            def from = attrs.from
+            def optionKey = attrs.optionkey
+            def noSelection = attrs.noSelection
+            def datePicker= attrs.datePicker
+            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection,datePicker:datePicker])
         } else {
             if (attrs.value)
                 out << "{op:'${operator}', field:'${attrs.name}', val:'${attrs.value}'},"

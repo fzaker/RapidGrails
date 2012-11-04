@@ -125,6 +125,7 @@ class JqueryUiTagLib {
                         dateFormat: 'yy/mm/dd',
                         changeMonth: true,
                         changeYear: true,
+                        ${attrs.yearRange?'yearRange:"'+attrs.yearRange+'",':''}
                         onSelect: function(dateText, inst) {
                             var s = jQuery("#${selector}_control").datepicker("getDate").getTime();
                             var dt = new Date(s);

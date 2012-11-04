@@ -74,6 +74,9 @@
       <sourceFolder url="file://$MODULE_DIR$/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/grails-app/utils" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/grails-app/domain" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
     </content>
     <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
@@ -82,11 +85,15 @@
     <orderEntry type="module" module-name="eshop-grailsPlugins" />
     <orderEntry type="module" module-name="EShop-grailsPlugins" />
     <orderEntry type="module" module-name="Cargo-grailsPlugins" />
+    <orderEntry type="module" module-name="KhavarmianeRegistering-grailsPlugins" />
+    <orderEntry type="module" module-name="EbankingDemo-grailsPlugins" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (RapidGrails)">
         <CLASSES>
           <root url="file://$MODULE_DIR$/lib" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-web/jars/spring-security-web-3.0.7.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-core/jars/spring-security-core-3.0.7.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jodd/jodd/jars/jodd-3.3.4.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jodd/jodd-wot/jars/jodd-wot-3.3.4.jar!/" />
         </CLASSES>

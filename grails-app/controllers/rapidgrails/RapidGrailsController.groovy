@@ -81,13 +81,16 @@ class RapidGrailsController {
                                     }
                                     else { // The simple case, f.field is direct field of the class
                                         def property = _domainClass.getPropertyByName(f.field)
-                                        def type=property.type
-                                        if(type.toString().equals("boolean"))
-                                            v =f.val as Boolean
-                                        else if(type.toString().equals("int"))
+                                        def type = property.type
+                                        if (type.toString().equals("boolean"))
+                                            v = f.val as Boolean
+                                        else if (type.toString().equals("int"))
+                                            v = f.val as Integer
+                                        else if (type == Number.class)
                                             v = f.val as Integer
                                         else
                                             v = property.type.newInstance(f.val)
+//                                        v = f.val.asType(property.type)
                                     }
                                     "${f.op}"(f.field, v)
                                 }
@@ -100,7 +103,6 @@ class RapidGrailsController {
                     c.setDelegate(delegate)
                     c.call()
                 }
-
                 if (params.sort) {
                     "${"order"}"(params.sort, params.order)
                 }
@@ -110,18 +112,18 @@ class RapidGrailsController {
                 if (params.max)
                     maxResults params.max
             }
-            def countQuery = {
-                if (params.filter) {
-                    def filter = JSON.parse(params.filter)
-//                    filter.each {
-//                        GrailsDomainClassProperty property = domainClass.getPropertyByName(it.p)
-//                        def v = property.type.newInstance(it.v)
-//                        "${it.o}"(it.p, v)
-//                    }
-                }
-            }
+//            def countQuery = {
+//                if (params.filter) {
+//                    def filter = JSON.parse(params.filter)
+////                    filter.each {
+////                        GrailsDomainClassProperty property = domainClass.getPropertyByName(it.p)
+////                        def v = property.type.newInstance(it.v)
+////                        "${it.o}"(it.p, v)
+////                    }
+//                }
+//            }
             instanceList = domainClass.clazz.createCriteria().list(query)
-            records = domainClass.clazz.createCriteria().count(countQuery)
+            records = domainClass.clazz.createCriteria().count(query)
         }
 
         def total = (int) (records / max) + 1
