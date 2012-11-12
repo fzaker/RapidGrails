@@ -16,6 +16,7 @@ class RapidGrailsController {
         def order = params.sord ?: null
 
         def tree = params.tree
+        def list = true
         def level
         def parentId
         if (tree) {
@@ -103,14 +104,16 @@ class RapidGrailsController {
                     c.setDelegate(delegate)
                     c.call()
                 }
-                if (params.sort) {
-                    "${"order"}"(params.sort, params.order)
-                }
+                if (list) {
+                    if (params.sort) {
+                        "${"order"}"(params.sort, params.order)
+                    }
 
-                if (params.offset)
-                    firstResult params.offset
-                if (params.max)
-                    maxResults params.max
+                    if (params.offset)
+                        firstResult params.offset
+                    if (params.max)
+                        maxResults params.max
+                }
             }
 //            def countQuery = {
 //                if (params.filter) {
@@ -122,7 +125,9 @@ class RapidGrailsController {
 ////                    }
 //                }
 //            }
+
             instanceList = domainClass.clazz.createCriteria().list(query)
+            list = false
             records = domainClass.clazz.createCriteria().count(query)
         }
 
