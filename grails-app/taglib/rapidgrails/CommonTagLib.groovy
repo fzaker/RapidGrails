@@ -64,7 +64,7 @@ class CommonTagLib {
         else
             style += "'" // closing single quote
 
-        html = "<ul class='CheckBoxList' " + style + ">"
+        html = "<ul class='CheckBoxList ${attrs.inline?"inline":""}' " + style + ">"
 
         out << html
 

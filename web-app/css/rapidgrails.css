@@ -41,3 +41,10 @@ h1 {
 ul.CheckBoxList li{
     display: block;
 }
+ul.inline li{
+    border: 1px solid lightgray;
+    border-radius: 4px 4px 4px 4px;
+    display: inline-block;
+    margin: 1px;
+    padding-left: 4px;
+}

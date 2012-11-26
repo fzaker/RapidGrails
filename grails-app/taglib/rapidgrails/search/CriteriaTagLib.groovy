@@ -44,7 +44,10 @@ class CriteriaTagLib {
     def like = { attrs, body ->
         searchBox(attrs, "like")
     }
-
+    def alias = {attrs, body ->
+        attrs.hidden = "true"
+        searchBox(attrs, "createAlias")
+    }
     def and = { attrs, body ->
         closureOperator(attrs, body, "and")
     }
@@ -90,8 +93,8 @@ class CriteriaTagLib {
             def from = attrs.from
             def optionKey = attrs.optionkey
             def noSelection = attrs.noSelection
-            def datePicker= attrs.datePicker
-            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection,datePicker:datePicker])
+            def datePicker = attrs.datePicker
+            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker])
         } else {
             if (attrs.value)
                 out << "{op:'${operator}', field:'${attrs.name}', val:'${attrs.value}'},"
