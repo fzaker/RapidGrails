@@ -98,6 +98,16 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-core/jars/spring-security-core-3.0.7.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jodd/jodd/jars/jodd-3.3.4.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jodd/jodd-wot/jars/jodd-wot-3.3.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.gmongo/gmongo/jars/gmongo-0.9.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-mongo/jars/grails-datastore-gorm-mongo-1.0.0.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-plugin-support/jars/grails-datastore-gorm-plugin-support-1.0.7.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-web/jars/grails-datastore-web-1.0.7.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.mongodb/mongo-java-driver/jars/mongo-java-driver-2.7.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.data/spring-data-commons-core/jars/spring-data-commons-core-1.2.0.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.data/spring-data-mongodb/jars/spring-data-mongodb-1.0.0.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-mongo/jars/grails-datastore-mongo-1.0.0.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-test/jars/grails-datastore-gorm-test-1.0.7.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

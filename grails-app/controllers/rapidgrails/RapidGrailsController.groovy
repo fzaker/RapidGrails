@@ -6,6 +6,7 @@ import grails.orm.HibernateCriteriaBuilder
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import rapidgrails.reporting.ReportDataReader
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.grails.datastore.gorm.mongo.MongoCriteriaBuilder
 
 class RapidGrailsController {
     def jsonList = {
@@ -55,7 +56,7 @@ class RapidGrailsController {
                 if (params.filter) {
                     def filter = JSON.parse(params.filter)
 
-                    HibernateCriteriaBuilder.metaClass.getFindingCriteria = { _filter, DefaultGrailsDomainClass _domainClass ->
+                    def findingCriteria = { _filter, DefaultGrailsDomainClass _domainClass ->
                         def closure = {
                             def aliases = [:]
                             _filter.each { f ->
@@ -81,16 +82,22 @@ class RapidGrailsController {
                                         v = aliasFieldProperty.type.newInstance(f.val)
                                     }
                                     else { // The simple case, f.field is direct field of the class
-                                        def property = _domainClass.getPropertyByName(f.field)
-                                        def type = property.type
-                                        if (type.toString().equals("boolean"))
-                                            v = f.val as Boolean
-                                        else if (type.toString().equals("int"))
-                                            v = f.val as Integer
-                                        else if (type == Number.class)
-                                            v = f.val as Integer
-                                        else
-                                            v = property.type.newInstance(f.val)
+                                        def property
+                                        try {
+                                            property = _domainClass.getPropertyByName(f.field)
+                                            def type = property.type
+                                            if (type.toString().equals("boolean"))
+                                                v = f.val as Boolean
+                                            else if (type.toString().equals("int"))
+                                                v = f.val as Integer
+                                            else if (type == Number.class)
+                                                v = f.val as Integer
+                                            else
+                                                v = property.type.newInstance(f.val)
+                                        } catch (e) {
+                                            v = f.val
+                                        }
+
 //                                        v = f.val.asType(property.type)
                                     }
                                     "${f.op}"(f.field, v)
@@ -99,6 +106,8 @@ class RapidGrailsController {
                         }
                         return closure
                     }
+                    HibernateCriteriaBuilder.metaClass.getFindingCriteria = findingCriteria
+                    MongoCriteriaBuilder.metaClass.getFindingCriteria = findingCriteria
                     Closure<?> c = delegate.getFindingCriteria(filter, domainClass)
                     c.setResolveStrategy(Closure.DELEGATE_ONLY)
                     c.setDelegate(delegate)
@@ -169,7 +178,7 @@ class RapidGrailsController {
                                 v = String.format("%.2f", v)
                             cell << v
                         } else {
-                            def v = it."${col}"
+                            def v = it[col]
                             if (v instanceof Date) {
                                 def cal = Calendar.getInstance()
                                 cal.setTime(v)
