@@ -51,6 +51,7 @@ class CriteriaTagLib {
     def nest = {attrs, body ->
         closureOperator(attrs, body, attrs.name)
     }
+
     def and = { attrs, body ->
         closureOperator(attrs, body, "and")
     }

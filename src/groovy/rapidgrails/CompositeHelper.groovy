@@ -2,6 +2,8 @@ package rapidgrails
 
 class CompositeHelper {
     def bindComposites(instance, params) {
+        if (!instance.hasProperty("composites"))
+            return
         def composites = instance.composites
         if (!composites)
             return

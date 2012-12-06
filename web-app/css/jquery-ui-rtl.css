@@ -1,0 +1,13 @@
+.ui-dialog .ui-dialog-title {
+    float: right !important;
+    margin: 0.1em 0 0.1em 16px !important;
+}
+
+.ui-dialog .ui-state-error {
+    padding: 0.3em;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    right: auto !important;
+    left: 0.3em !important;
+}

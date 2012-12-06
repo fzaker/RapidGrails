@@ -12,11 +12,16 @@ class JqgridTagLib {
 
         //out << jqui.resources(theme: 'cobalt')
 
-        def localeURL = g.resource(plugin: 'rapid-grails', dir: 'jqgrid/js/i18n', file: 'grid.locale-fa.js')
+        def localeURL = ""
+        if (grailsApplication.config.rapidgrails.application.direction == "rtl") {
+            localeURL = g.resource(plugin: 'rapid-grails', dir: 'jqgrid/js/i18n', file: 'grid.locale-fa.js')
+        } else {
+            localeURL = g.resource(plugin: 'rapid-grails', dir: 'jqgrid/js/i18n', file: 'grid.locale-en.js')
+        }
         def localeTag = "<script type=\"text/javascript\" src=\"${localeURL}\"></script>"
         out << localeTag
 
-        def jsURL = g.resource(plugin: 'rapid-grails', dir: 'jqgrid/js', file: 'jquery.jqGrid.src.js')
+        def jsURL = g.resource(plugin: 'rapid-grails', dir: 'jqgrid/js', file: 'jquery.jqGrid.min.js')
         def scriptTag = "<script type=\"text/javascript\" src=\"${jsURL}\"></script>"
         out << scriptTag
 
@@ -33,13 +38,22 @@ class JqgridTagLib {
     }
 
     def jqgrid = {attrs, body ->
-        def gridParams = [:]
-        request.setAttribute("gridParams", gridParams)
-        out << body()
-        request.removeAttribute("gridParams")
-
         def maxColumnCount = attrs.columns ? attrs.columns.size() : (attrs.maxColumns ? Integer.parseInt(attrs.maxColumns) : 6)
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(attrs.domainClass.name)
+        def gridName = "${domainClass.shortName}${attrs.idPostfix?:""}Grid"
+
+        def gridParams = [:]
+        def commands = []
+        request.setAttribute("gridName", gridName)
+        request.setAttribute("domainClass", attrs.domainClass.name)
+        request.setAttribute("gridParams", gridParams)
+        request.setAttribute("commands", commands)
+        out << body()
+        request.removeAttribute("gridName")
+        request.removeAttribute("domainClass")
+        request.removeAttribute("gridParams")
+        request.removeAttribute("commands")
+
         def excludedProperties = ["id", "version", "password"]
         def colNames = []
         def colModel = []
@@ -69,7 +83,7 @@ class JqgridTagLib {
         def footerRowFillCode = ""
         if (footerRow)
             footerRowFillCode = """
-        var g = jQuery("#${domainClass.shortName}${attrs.idPostfix?:""}Grid");
+        var g = jQuery("#${gridName}");
         var userData = g.jqGrid("getGridParam","userData");
         g.jqGrid("footerData","set",userData,false);
         """
@@ -167,18 +181,23 @@ class JqgridTagLib {
         }
 
 
-        def defaultCaption = message(code: "${domainClass.propertyName}.label")
-        def arg = message(code: domainClass.propertyName)//, default: defaultCaption)
-        def default2 = message(code: "default.list.label", args: [arg], default: "${domainClass.shortName} List")
-        def caption = message(code: "${domainClass.propertyName}.list", default: default2)
+        def caption
+        if (attrs.caption != null)
+            caption = attrs.caption
+        else {
+            //def defaultCaption = message(code: "${domainClass.propertyName}.label")
+            def arg = message(code: domainClass.propertyName)//, default: defaultCaption)
+            def default2 = message(code: "default.list.label", args: [arg], default: "${domainClass.shortName} List")
+            caption = message(code: "${domainClass.propertyName}.list", default: default2)
+        }
 
         def tagBody = """
-        <table id="${domainClass.shortName}${attrs.idPostfix?:""}Grid" ${attrs.width? "style=\"width:${attrs.width}\"" : ""}></table>
+        <table id="${gridName}" ${attrs.width? "style=\"width:${attrs.width}\"" : ""}></table>
         <div id="${domainClass.shortName}${attrs.idPostfix?:""}Pager"></div>
         <script type="text/javascript">
             ${attrs.tree?"""
-            function reload${domainClass.shortName}${attrs.idPostfix?:""}GridNode(id,lastExpandedStatus){
-                var grid = jQuery("#${domainClass.shortName}${attrs.idPostfix?:""}Grid")
+            function reload${gridName}Node(id,lastExpandedStatus){
+                var grid = jQuery("#${gridName}")
                 var p=grid[0].p
                 var node=p.data[p._index[id]]
                 var collapse=false
@@ -200,8 +219,8 @@ class JqgridTagLib {
                 }
             }
             """:""}
-            jQuery("#${domainClass.shortName}${attrs.idPostfix?:""}Grid").jqGrid({
-                direction: "rtl",
+            jQuery("#${gridName}").jqGrid({
+                direction: "${grailsApplication.config.rapidgrails.application.direction?:"ltr"}",
                 ${treeParams}
                 url: "${url}",
                 ${datatypeDefinition},
@@ -215,6 +234,7 @@ class JqgridTagLib {
                 ${attrs.sortorder?"sortorder:'"+attrs.sortorder+"',":''}
                 //sortorder: "asc",
                 autowidth: true,
+                //width: 800,
                 height: "100%",
                 ${showRowsOptions}
                 ${footerRow?"footerrow : true,userDataOnFooter : false,":""}
@@ -224,9 +244,12 @@ class JqgridTagLib {
                 ${groupby}
                 ${ondblClickRow}
                 ${onSelectRow}
+                cellLayout: 12,
+                altRows: true,
+                altclass: "altrow",
                 caption: "${caption}"
             });
-            jQuery("#${domainClass.shortName}${attrs.idPostfix?:""}Grid").jqGrid('navGrid', '#${domainClass.shortName}${attrs.idPostfix?:""}Pager', {edit:false,add:false,del:false,search:false});
+            jQuery("#${gridName}").jqGrid('navGrid', '#${domainClass.shortName}${attrs.idPostfix?:""}Pager', {edit:false,add:false,del:false,search:false});
 
 
         </script>
@@ -242,7 +265,8 @@ class JqgridTagLib {
                 var r = "${initialCommand}";
         """
 
-        attrs.commands?.each {
+        def allCommands = (attrs.commands?:[]) + commands
+        allCommands?.each {
             def iconTitle=it.title?:message(code: it.icon)
             if (it.handler) {
                 def handler = it.handler.replaceAll("#id#", "\" + cellvalue + \"")
@@ -251,7 +275,7 @@ class JqgridTagLib {
             else if (it.loadOverlay) {
                 def remoteAddress = "'" + it.loadOverlay.replaceAll("#id#", "\" + cellvalue + \"") + "'"
                 def loadCallback=it.loadCallback?","+it.loadCallback:""
-                def saveCallback=it.saveCallback?it.saveCallback:"function(){\$('#${domainClass.shortName}${attrs.idPostfix?:""}Grid').trigger('reloadGrid')}"
+                def saveCallback=it.saveCallback?it.saveCallback:"function(){\$('#${gridName}').trigger('reloadGrid')}"
                 out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:loadOverlay(${remoteAddress},'${it.saveAction}',${saveCallback}${loadCallback})\\"><img src=\\"${fam.icon(name: it.icon)}\\"  title=\\"${iconTitle}\\"/></a>";"""
             }
             else if (it.childGrid) {
@@ -276,7 +300,7 @@ class JqgridTagLib {
         attrs.toolbarCommands?.each{
             out << """
             <script type=\"text/javascript\">
-                jQuery("#${domainClass.shortName}${attrs.idPostfix?:""}Grid").jqGrid('navButtonAdd', '#${domainClass.shortName}${attrs.idPostfix?:""}Pager', {
+                jQuery("#${gridName}").jqGrid('navButtonAdd', '#${domainClass.shortName}${attrs.idPostfix?:""}Pager', {
                     caption:"${it.caption}",
                     buttonicon:"ui-icon-${it.icon?:it.caption}",
                     onClickButton:function(){${it.function}();}
@@ -284,5 +308,18 @@ class JqgridTagLib {
             </script>
             """;
         }
+    }
+
+    def commands = { attrs, body ->
+        body()
+    }
+
+    def deleteCommand = { attrs, body ->
+        def commands = request.getAttribute("commands")
+        def gridName = request.getAttribute("gridName")
+        def domainClass = request.getAttribute("domainClass")
+        def deleteUrl = createLink(controller: "rapidGrails", action: "delete")
+
+        commands << [handler: "genericDelete('${deleteUrl}', '${gridName}', '${domainClass}', #id#)", icon: "cross"]
     }
 }

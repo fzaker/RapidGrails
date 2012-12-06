@@ -11,8 +11,12 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
  */
 class TaglibHelper {
     def static getBooleanAttribute(attrs, attr) {
+        return getBooleanAttribute(attrs, attr, false)
+    }
+
+    def static getBooleanAttribute(attrs, attr, defaultValue) {
         if (!attrs[attr])
-            return false;
+            return defaultValue;
         return Boolean.parseBoolean(attrs[attr])
     }
 

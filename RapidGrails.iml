@@ -85,8 +85,7 @@
     <orderEntry type="module" module-name="eshop-grailsPlugins" />
     <orderEntry type="module" module-name="EShop-grailsPlugins" />
     <orderEntry type="module" module-name="Cargo-grailsPlugins" />
-    <orderEntry type="module" module-name="KhavarmianeRegistering-grailsPlugins" />
-    <orderEntry type="module" module-name="EbankingDemo-grailsPlugins" />
+    <orderEntry type="module" module-name="RapidGrails-grailsPlugins" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="commons-math-1.0" level="project" />
     <orderEntry type="module-library" exported="">

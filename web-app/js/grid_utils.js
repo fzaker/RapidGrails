@@ -84,3 +84,14 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
                 loadCallback(response);
         });
 }
+
+var genericDelete = function(remoteAddress, gridName, domainClass, id) {
+    var data = {id: id, domainClass: domainClass}
+    $.ajax({
+        type:"GET",
+        url: remoteAddress,
+        data: data
+    }).done(function (response) {
+        jQuery("#" + gridName).trigger("reloadGrid");
+    });
+}

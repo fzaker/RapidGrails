@@ -220,6 +220,13 @@ class RapidGrailsController {
                 }, userdata: userData] as JSON)
     }
 
+    def jsonInstance = {
+        DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
+        JSON.use("deep") {
+            render domainClass.clazz.findById(params.id) as JSON
+        }
+    }
+
     def getSampleCriteria() {
         def closure = {
             eq("firstName", "farshid")
@@ -235,5 +242,25 @@ class RapidGrailsController {
             [id: it.id, label: it.toString(), value: it.toString()]
         }
         render map as JSON
+    }
+
+    def save = {
+        DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
+        def instance
+        if (params.id)
+            instance = domainClass.clazz.findById(params.id)
+        else
+            instance = domainClass.newInstance()
+        bindData(instance, params)
+        bindComposites(instance, params)
+        instance.save()
+        render "1"
+    }
+
+    def delete = {
+        DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
+        def instance = domainClass.clazz.findById(params.id)
+        instance.delete(flush: true)
+        render "1"
     }
 }
