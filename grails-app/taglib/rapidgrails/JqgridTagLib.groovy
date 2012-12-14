@@ -240,6 +240,10 @@ class JqgridTagLib {
                 ${footerRow?"footerrow : true,userDataOnFooter : false,":""}
                 loadComplete: function(data) {
                     ${footerRowFillCode}
+                    ${attrs.loadComplete?attrs.loadComplete+"(data)":""}
+                },
+                gridComplete:function(data){
+                    ${attrs.gridComplete?attrs.gridComplete+"(data)":""}
                 },
                 ${groupby}
                 ${ondblClickRow}

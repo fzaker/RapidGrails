@@ -31,6 +31,10 @@ class CriteriaTagLib {
     def eq = { attrs, body ->
         searchBox(attrs, "eq")
     }
+
+    def inCrit = { attrs, body ->
+        searchBox(attrs, "in")
+    }
     def ne = { attrs, body ->
         searchBox(attrs, "ne")
     }
@@ -100,8 +104,12 @@ class CriteriaTagLib {
             def datePicker = attrs.datePicker
             out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker])
         } else {
-            if (attrs.value)
-                out << "{op:'${operator}', field:'${attrs.name}', val:'${attrs.value}'},"
+            if (attrs.value){
+                if(attrs.value instanceof String)
+                    out << "{op:'${operator}', field:'${attrs.name}', val:'${attrs.value}'},"
+                else
+                    out << "{op:'${operator}', field:'${attrs.name}', val:${attrs.value}},"
+            }
             else
                 out << ""
         }
