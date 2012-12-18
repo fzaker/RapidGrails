@@ -86,7 +86,7 @@ ul.inline li{
     width: auto !important;
 }
 
-input[type="button"] {
+input[type="button"], input[type="submit"] {
     margin-top: 10px;
     -moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
     -webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
