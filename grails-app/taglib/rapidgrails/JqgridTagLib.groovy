@@ -226,7 +226,7 @@ class JqgridTagLib {
                 ${datatypeDefinition},
                 colNames:${colNames as JSON},
                 colModel:${colModel as JSON},
-                rowList:[10,20,30,50,100,500],
+                rowList:[10,20,30,50,100],
                 pager: '#${domainClass.shortName}${attrs.idPostfix?:""}Pager',
                 ${attrs.sortname?"sortname:'"+attrs.sortname+"',":''}
                 //sortname: 'id',
