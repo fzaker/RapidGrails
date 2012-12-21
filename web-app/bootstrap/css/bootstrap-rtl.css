@@ -43,9 +43,9 @@
 }
 
 .thumbnails > li {
-    float: right !important;
-    margin-left: 1.9% !important;
-    margin-right: 0px !important;
+    float: right;
+    margin-left: 1.9%;
+    margin-right: 0px;
     min-height: 288px;
     height: 288px;
 
@@ -77,11 +77,11 @@
 }
 .row-fluid [class*="span"]:first-child {
     margin-right: 0;
-    margin-left: auto !important;
+    margin-left: 0;
 }
 
 .row-fluid [class*="span"] {
     margin-right: 2.5641%;
-    margin-left: auto !important;
-    float: right !important;
+    margin-left: 0;
+    float: right;
 }
