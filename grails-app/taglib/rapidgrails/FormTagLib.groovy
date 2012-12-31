@@ -10,7 +10,7 @@ class FormTagLib {
     def fields = { attrs, body ->
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(attrs.bean.class.name)
         def props = TaglibHelper.getDomainClassProperties(domainClass)
-        def composites = attrs.bean.hasProperty("composites")?attrs.bean.composites:null
+        def composites = attrs.bean.hasProperty("composites") ? attrs.bean.composites : null
 
         request.setAttribute("interceptCreateDialog", "")
         request.setAttribute("modify", [:])
@@ -24,25 +24,27 @@ class FormTagLib {
         def count = 0
         def newColumn = false
         props.each { p ->
-            if (composites?.contains(p.name))
-                out << compositeRows(bean: attrs.bean, property: p.name, className: p.domainClass.propertyName)
-            else if (modify.hiddenReferences?.contains(p.name))
-                out << g.hiddenField(name: "${p.name}.id", "value": "{{${domainClass.propertyName}Instance.${p.name}.id}}")
-            else {
-                if (newColumn) {
-                    out << "</div><div class=\"form-fields-part\">"
-                    newColumn = false
+            if (!modify.ignoredFields?.contains(p.name)) {
+                if (composites?.contains(p.name))
+                    out << compositeRows(bean: attrs.bean, property: p.name, className: p.domainClass.propertyName)
+                else if (modify.hiddenReferences?.contains(p.name))
+                    out << g.hiddenField(name: "${p.name}.id", "value": "{{${domainClass.propertyName}Instance.${p.name}.id}}")
+                else {
+                    if (newColumn) {
+                        out << "</div><div class=\"form-fields-part\">"
+                        newColumn = false
+                    }
+                    if (modify.readonlyFields?.contains(p.name)) {
+                        out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
+                    }
+                    else
+                        out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
+                    count++
                 }
-                if(modify.readonlyFields?.contains(p.name)){
-                    out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}","input-readonly":"true")
+                if (count >= 10) {
+                    count = 0
+                    newColumn = true
                 }
-                else
-                    out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
-                count++
-            }
-            if (count >= 10) {
-                count = 0
-                newColumn = true
             }
         }
         out << "</div></div>"
@@ -97,6 +99,7 @@ class FormTagLib {
         def modify = request.getAttribute("modify")
         modify.hiddenReferences = []
         modify.readonlyFields = []
+        modify.ignoredFields = []
         body()
     }
 
@@ -105,6 +108,11 @@ class FormTagLib {
         def hiddenReferences = modify.hiddenReferences
         hiddenReferences << attrs.field
     }
+    def ignoreField = { attrs, body ->
+        def modify = request.getAttribute("modify")
+        def ignoredFields = modify.ignoredFields
+        ignoredFields << attrs.field
+    }
 
     def readonlyField = { attrs, body ->
         def modify = request.getAttribute("modify")
@@ -112,7 +120,7 @@ class FormTagLib {
         readonlyFields << attrs.field
     }
 
-    def angularController = { attrs, body->
+    def angularController = { attrs, body ->
         def self = TaglibHelper.getBooleanAttribute(attrs, "self", true)
         def subclasses = TaglibHelper.getBooleanAttribute(attrs, "subClasses", false)
 
@@ -182,7 +190,7 @@ class FormTagLib {
         out << g.render(template: "/template/compositeManyField", model: [instance: attrs.bean, className: attrs.className, compositeProperty: attrs.property], plugin: "rapid-grails")
     }
 
-    def compositeRow = { attrs, body->
+    def compositeRow = { attrs, body ->
         def parent = attrs.parent
         def index = (attrs.index == "_clone") ? null : Integer.valueOf(attrs.index)
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(parent.class.name)
@@ -198,7 +206,7 @@ class FormTagLib {
 
         out << g.hiddenField(name: 'id', value: compositeInstance.id).replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
         out << g.hiddenField(name: 'deleted', value: compositeInstance.deleted).replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
-        out << g.hiddenField(name: 'new', value: compositeInstance?.id == null? 'true': 'false').replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
+        out << g.hiddenField(name: 'new', value: compositeInstance?.id == null ? 'true' : 'false').replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
 
         def excludedProperties = ["deleted", "indx"]
         def excludedTypes = []
@@ -216,13 +224,13 @@ class FormTagLib {
         }
     }
 
-    def crud = { attrs, body->
+    def crud = { attrs, body ->
         def domainClass = null
         def propertyName = "forwardingReference"
         def shortName = ""
 
         out << "<div id=\"list-${propertyName}\" ng-controller=\"${propertyName}Controller\" class=\"content scaffold-list\" role=\"main\">"
-        out << rg.grid(domainClass:domainClass)
+        out << rg.grid(domainClass: domainClass)
 //                <rg:dialog id="${propertyName}" title="${shortName} Dialog">
 //                    <rg:fields bean="${domainClass.newInstance()}"></rg:fields>
 //                    <rg:saveButton domainClass="${domainClass}"/>

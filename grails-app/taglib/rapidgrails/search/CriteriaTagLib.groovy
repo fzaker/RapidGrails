@@ -23,7 +23,7 @@ class CriteriaTagLib {
                 r = r[0..-2]
             if (r)
                 r = "[${r}]"
-            r = r.replace("\r\n", "")
+            r = r.replace("\r", "").replace("\n","")
             gridParams.filter = r
         }
     }
