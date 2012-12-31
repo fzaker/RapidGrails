@@ -78,10 +78,10 @@ class FormTagLib {
                             });
                         }
 
-                        \$scope.save${domainClass.propertyName.capitalize()} = function(dialogId, gridId, url, domainClass) {
+                        \$scope.save${domainClass.propertyName.capitalize()} = function(dialogId, gridId, url, domainClass, params) {
                             if (\$scope.${domainClass.propertyName}Instance.id)
                                 url = url + "/" + \$scope.${domainClass.propertyName}Instance.id;
-                            sendSaveRequest(dialogId, gridId, url, domainClass);
+                            sendSaveRequest(dialogId, gridId, url, domainClass, params);
                         }
                     }
                 </script>
@@ -170,10 +170,10 @@ class FormTagLib {
                 });
             }
 
-            \$scope.save${domainClass.propertyName.capitalize()} = function(dialogId, gridId, url, domainClass) {
+            \$scope.save${domainClass.propertyName.capitalize()} = function(dialogId, gridId, url, domainClass, params) {
                 if (\$scope.${domainClass.propertyName}Instance.id)
                     url = url + "/" + \$scope.${domainClass.propertyName}Instance.id;
-                sendSaveRequest(dialogId, gridId, url, domainClass);
+                sendSaveRequest(dialogId, gridId, url, domainClass, params);
             }
             """
     }
