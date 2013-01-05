@@ -85,3 +85,27 @@
     margin-left: 0;
     float: right;
 }
+
+
+.radio input[type="radio"], .checkbox input[type="checkbox"] {
+    float: right;
+    margin-right: -18px;
+    margin-left: auto;
+}
+
+.radio, .checkbox {
+    padding-right: 18px;
+    padding-left: 0;
+}
+
+label, input, button, select, textarea {
+    font-size: 11px;
+}
+
+label {
+    margin-bottom: 0;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    margin: 4px 0 0 4px;
+}
