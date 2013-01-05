@@ -21,7 +21,7 @@ function setUrlParam(url, param_name, param_value) {
     return baseURL + "?" + newAdditionalURL + add_param;
 }
 
-function sendSaveRequest(formContainerId, gridItToReload, url, domainClass) {
+function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, params) {
     var frm = jQuery("#" + formContainerId + ">form");
     var data = frm.serialize();
     data += "&domainClass=" + domainClass;
@@ -31,6 +31,9 @@ function sendSaveRequest(formContainerId, gridItToReload, url, domainClass) {
         success: function(response) {
             jQuery("#" + capitaliseFirstLetter(gridItToReload) + "Grid").trigger('reloadGrid');
             jQuery("#" + formContainerId).dialog("close")
+            if(params && params.saveCallback){
+                eval(params.saveCallback+"(response)");
+            }
         }
     })
 }

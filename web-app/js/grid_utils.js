@@ -41,6 +41,7 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
                 modal:true,
                 width:params.width,
                 resizable:false,
+                position:'top',
                 buttons:{
                     'ذخیره':function () {
                         if(params && params.beforeSubmit)

@@ -1,6 +1,7 @@
 package rapidgrails
 
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
+import grails.converters.JSON
 
 class PopupTagLib {
     static namespace = "rg"
@@ -65,6 +66,7 @@ class PopupTagLib {
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(attrs.domainClass.name)
         def gridId = attrs.gridId ?: domainClass.propertyName
         def url = g.createLink(controller: attrs.conroller?:"rapidGrails", action: attrs.action?:"save")
-        out << "<input type='button' value='${saveLabel}' ng-click='save${domainClass.propertyName.capitalize()}(\"${dialogId}\", \"${gridId}\", \"${url}\", \"${domainClass.fullName}\")'/>"
+        def params=attrs.params?:[:]
+        out << "<input type='button' value='${saveLabel}' ng-click='save${domainClass.propertyName.capitalize()}(\"${dialogId}\", \"${gridId}\", \"${url}\", \"${domainClass.fullName}\",${params as JSON})'/>"
     }
 }
