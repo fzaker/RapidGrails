@@ -142,7 +142,7 @@ class JqueryUiTagLib {
             <input type="hidden" id="${attrs.id?:attrs.name}_year" name="${attrs.name}_year" value="${y}" />
             <input type="hidden" id="${attrs.id?:attrs.name}_month" name="${attrs.name}_month" value="${m}" />
             <input type="hidden" id="${attrs.id?:attrs.name}_day" name="${attrs.name}_day" value="${d}" />
-            <input type="text" readonly="true" id="${attrs.id?:attrs.name}_control" name="${attrs.name}_control" value="${control_value}" ${cls} ${attrs.placeholder? "placeholder=\"${attrs.placeholder}\"":""} />
+            <input type="text" readonly="true" id="${attrs.id?:attrs.name}_control" name="${attrs.name}_control" value="${control_value}" ${cls} ${attrs.placeholder? "placeholder=\"${attrs.placeholder}\"":""} ${attrs."input-ng-model"?"ng-model=\"${attrs."input-ng-model"}\"":""}/>
         """
 
         def hourMinPart = ""

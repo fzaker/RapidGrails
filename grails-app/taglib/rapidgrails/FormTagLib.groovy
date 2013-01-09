@@ -37,6 +37,9 @@ class FormTagLib {
                     if (modify.readonlyFields?.contains(p.name)) {
                         out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
                     }
+                    else if(p.type==Date.class){
+                        out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
+                    }
                     else
                         out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
                     count++

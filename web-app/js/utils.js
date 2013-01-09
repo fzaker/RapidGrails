@@ -27,6 +27,7 @@ function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, para
     data += "&domainClass=" + domainClass;
     jQuery.ajax({
         url: url,
+        type:(params && params.method)?params.method:"get",
         data: data,
         success: function(response) {
             jQuery("#" + capitaliseFirstLetter(gridItToReload) + "Grid").trigger('reloadGrid');
