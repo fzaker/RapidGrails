@@ -11,3 +11,10 @@
     right: auto !important;
     left: 0.3em !important;
 }
+.ui-helper-hidden-accessible{
+    clip: auto !important;
+}
+input[readonly].hasDatepicker{
+    background-color: #ffffff;
+    cursor: text;
+}
