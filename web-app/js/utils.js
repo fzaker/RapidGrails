@@ -4,9 +4,8 @@ function capitaliseFirstLetter(string) {
 
 function setUrlParam(url, param_name, param_value) {
     var newAdditionalURL = "";
-    var tempArray = url.split("?");
-    var baseURL = tempArray[0];
-    var aditionalURL = tempArray[1];
+    var baseURL = url.substring(0,url.indexOf("?"));
+    var aditionalURL = url.substring(url.indexOf("?")+1);
     var temp = "";
     if (aditionalURL) {
         var tempArray = aditionalURL.split("&");
