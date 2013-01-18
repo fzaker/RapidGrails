@@ -21,13 +21,14 @@ function setUrlParam(url, param_name, param_value) {
 }
 
 function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, params) {
+
+    //load jquery.form.js from rapidgrails/web-app/js/
+
     var frm = jQuery("#" + formContainerId + ">form");
-    var data = frm.serialize();
-    data += "&domainClass=" + domainClass;
-    jQuery.ajax({
+    frm.ajaxSubmit({
         url: url,
         type:(params && params.method)?params.method:"get",
-        data: data,
+        data: {domainClass:domainClass},
         success: function(response) {
             jQuery("#" + capitaliseFirstLetter(gridItToReload) + "Grid").trigger('reloadGrid');
             jQuery("#" + formContainerId).dialog("close")

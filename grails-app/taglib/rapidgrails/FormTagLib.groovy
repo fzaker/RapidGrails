@@ -14,11 +14,11 @@ class FormTagLib {
 
         request.setAttribute("interceptCreateDialog", "")
         request.setAttribute("modify", [:])
-        body()
-        def modify = request.getAttribute("modify")
 
         out << "<form>"
         out << "<div class=\"form-fields\"><div class=\"form-fields-part\">"
+        out << body()
+        def modify = request.getAttribute("modify")
 
 //        out << g.hiddenField(name: "id", value: "0", "ng-model": "${domainClass.propertyName}Instance.id")
         def count = 0
