@@ -4,9 +4,8 @@ function capitaliseFirstLetter(string) {
 
 function setUrlParam(url, param_name, param_value) {
     var newAdditionalURL = "";
-    var tempArray = url.split("?");
-    var baseURL = tempArray[0];
-    var aditionalURL = tempArray[1];
+    var baseURL = url.substring(0,url.indexOf("?"));
+    var aditionalURL = url.substring(url.indexOf("?")+1);
     var temp = "";
     if (aditionalURL) {
         var tempArray = aditionalURL.split("&");
@@ -22,12 +21,14 @@ function setUrlParam(url, param_name, param_value) {
 }
 
 function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, params) {
+
+    //load jquery.form.js from rapidgrails/web-app/js/
+
     var frm = jQuery("#" + formContainerId + ">form");
-    var data = frm.serialize();
-    data += "&domainClass=" + domainClass;
-    jQuery.ajax({
+    frm.ajaxSubmit({
         url: url,
-        data: data,
+        type:(params && params.method)?params.method:"get",
+        data: {domainClass:domainClass},
         success: function(response) {
             jQuery("#" + capitaliseFirstLetter(gridItToReload) + "Grid").trigger('reloadGrid');
             jQuery("#" + formContainerId).dialog("close")

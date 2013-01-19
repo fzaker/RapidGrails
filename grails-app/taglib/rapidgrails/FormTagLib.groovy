@@ -14,11 +14,11 @@ class FormTagLib {
 
         request.setAttribute("interceptCreateDialog", "")
         request.setAttribute("modify", [:])
-        body()
-        def modify = request.getAttribute("modify")
 
         out << "<form>"
         out << "<div class=\"form-fields\"><div class=\"form-fields-part\">"
+        out << body()
+        def modify = request.getAttribute("modify")
 
 //        out << g.hiddenField(name: "id", value: "0", "ng-model": "${domainClass.propertyName}Instance.id")
         def count = 0
@@ -36,6 +36,11 @@ class FormTagLib {
                     }
                     if (modify.readonlyFields?.contains(p.name)) {
                         out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
+                    }
+                    else if (p.type == Date.class) {
+                        out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
+                        out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
+                        out << "</div>"
                     }
                     else
                         out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")

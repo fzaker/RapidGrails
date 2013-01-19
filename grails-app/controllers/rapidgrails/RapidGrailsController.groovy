@@ -173,6 +173,7 @@ class RapidGrailsController {
                     colNames.each { col ->
                         if (expressions[col]) {
                             binding.setVariable("obj", it)
+                            binding.setVariable("g", g)
                             def v = gs.evaluate("${expressions[col]}")
                             if ((v instanceof Double) || (v instanceof Float))
                                 v = String.format("%.2f", v)
