@@ -47,6 +47,10 @@ class FormTagLib {
                 }
             }
         }
+        modify.extraFields.each {
+            out << it
+        }
+
         out << "</div></div>"
         out << "</form>"
         def angular = TaglibHelper.getBooleanAttribute(attrs, "angular", true)
@@ -100,7 +104,14 @@ class FormTagLib {
         modify.hiddenReferences = []
         modify.readonlyFields = []
         modify.ignoredFields = []
+        modify.extraFields = []
         body()
+    }
+
+    def extraField = {attrs, body ->
+        def modify = request.getAttribute("modify")
+        def extraFields = modify.extraFields
+        extraFields << body()
     }
 
     def hiddenReference = { attrs, body ->
