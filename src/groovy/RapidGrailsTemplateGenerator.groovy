@@ -9,7 +9,6 @@ import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 
 class RapidGrailsTemplateGenerator extends DefaultGrailsTemplateGenerator {
     static final RapidGrailsTemplateGenerator instance = new RapidGrailsTemplateGenerator()
-    def pluginManager
     def rapidGrailsRenderEditorTemplate
 
     // uses the type to render the appropriate editor
