@@ -83,6 +83,9 @@ class JqueryUiTagLib {
                 source: '${g.createLink(controller:"rapidGrails", action:"search", params:[domainClass:"${attrs.domainClass}", like: "${Boolean.parseBoolean(attrs.like)?:false}"])}',
                 minLength: 2,
                 select: function(event, ui) {jQuery("#${selector}\\\\.id").val(ui.item.id);}
+            }).change(function(){
+                if(jQuery(this).val()=="")
+                    jQuery("#${selector}\\\\.id\").val("");
             });
         </script>
         """
