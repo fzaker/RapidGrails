@@ -48,6 +48,9 @@ class CriteriaTagLib {
     def like = { attrs, body ->
         searchBox(attrs, "like")
     }
+    def ilike = { attrs, body ->
+        searchBox(attrs, "ilike")
+    }
     def alias = {attrs, body ->
         attrs.hidden = "true"
         searchBox(attrs, "createAlias")

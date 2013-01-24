@@ -12,7 +12,7 @@ var loadGrid = function (group, gridId) {
     var grid = $("#" + gridId);
     var url = grid.getGridParam('url');
     var newUrl = setUrlParam(url, "filter", $.toJSON(criteria));
-    grid.setGridParam({url:newUrl});
+    grid.setGridParam({url:newUrl,page:1});
     grid.trigger("reloadGrid");
 }
 
@@ -51,7 +51,7 @@ var getCriteriaRecursive = function (eleman) {
         criteria = {};
         criteria.op = op;
         var v = $(eleman).val();
-        if (op == 'like')
+        if ((op == 'like' || op == 'ilike') && v)
             v = '%25'+v+'%25';
         var f = $(eleman).attr("name");
 
