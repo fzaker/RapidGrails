@@ -120,7 +120,9 @@ class JqueryUiTagLib {
         selector = escapeForJquery(selector);
 
         def cls = attrs.class ? "class=\"${attrs.class}\"" : ""
-        def tt=g.javascript(null,"""${already ? "" : "jQuery(document).ready(function() {"}
+        def tt="""
+                <script>
+                ${already ? "" : "jQuery(document).ready(function() {"}
                     jQuery("#${selector}_control").datepicker({
                         dateFormat: 'yy/mm/dd',
                         changeMonth: true,
@@ -136,7 +138,9 @@ class JqueryUiTagLib {
                         }
                     });
                     ${attrs.required?"jQuery('#${selector}_control').change(function(){if(\$(this).val()){\$(this).removeClass('invalid')}else{\$(this).addClass('invalid')}});jQuery('#${selector}_control').change();":""}
-                ${already ? "" : "});"}""")
+                ${already ? "" : "});"}
+            </script>
+            """
         def tagBody = """${tt}
 
             <input type="hidden" value="date.struct" id="${attrs.id?:attrs.name}" name="${attrs.name}"/>
