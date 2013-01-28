@@ -51,6 +51,16 @@ class CriteriaTagLib {
     def ilike = { attrs, body ->
         searchBox(attrs, "ilike")
     }
+    def isNotEmpty = { attrs, body ->
+        attrs.hidden = "true"
+        attrs.unary = "true"
+        searchBox(attrs, "isNotEmpty")
+    }
+    def isEmpty = { attrs, body ->
+        attrs.hidden = "true"
+        attrs.unary = "true"
+        searchBox(attrs, "isEmpty")
+    }
     def alias = {attrs, body ->
         attrs.hidden = "true"
         searchBox(attrs, "createAlias")
@@ -112,6 +122,9 @@ class CriteriaTagLib {
                     out << "{op:'${operator}', field:'${attrs.name}', val:'${attrs.value}'},"
                 else
                     out << "{op:'${operator}', field:'${attrs.name}', val:${attrs.value}},"
+            }
+            else if (attrs.unary){
+                out << "{op:'${operator}', field:'${attrs.name}'},"
             }
             else
                 out << ""

@@ -100,7 +100,10 @@ class RapidGrailsController {
 
 //                                        v = f.val.asType(property.type)
                                     }
-                                    "${f.op}"(f.field, v)
+                                    if(f.val)
+                                        "${f.op}"(f.field, v)
+                                    else
+                                        "${f.op}"(f.field)
                                 }
                             }
                         }
