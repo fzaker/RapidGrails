@@ -1,28 +1,5 @@
-%{--<g:render template="/template/compositeItem" model="${[instance: instance, i:0, name: compositeProperty, hidden: false]}" />--}%
 
 <script type="text/javascript">
-    var ${compositeProperty}ChildCount = ${instance?."${compositeProperty}"?.size()} +0;
-
-    function addTo${compositeProperty}() {
-        var clone = $("#${compositeProperty}_clone").clone();
-        var scriptsClone = $("#${compositeProperty}_clone").find('script').clone();
-        clone.find('script').remove();
-        clone.css('display', 'block');
-        var h = clone.html();
-        h = h.replace(/_clone/g, ${compositeProperty}ChildCount);
-        clone.html(h);
-        clone.attr('id', clone.attr('id').replace(/_clone/g, ${compositeProperty}ChildCount));
-        $("#${compositeProperty}_childList").append($(clone));
-
-        for (var i = 0; i < scriptsClone.length; i++) {
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.innerHTML = $(scriptsClone[i]).html().replace(/_clone/g, ${compositeProperty}ChildCount);
-            $("#${compositeProperty}_childList").append(script);
-        }
-
-        ${compositeProperty}ChildCount++;
-    }
 
     $('.del-${compositeProperty}').live('click', function () {
         var prnt = $(this).parents(".${compositeProperty}-div");
@@ -40,27 +17,12 @@
 
 <div class="initialList">
     <div id="${compositeProperty}_childList" style="float:none;">
-        <g:each var="child" in="${instance?."${compositeProperty}"}" status="i">
-            <g:render template="/template/compositeItem"
-                      model="${[instance: instance, i: i, name: compositeProperty, hidden: false]}"/>
-        </g:each>
+
+        <g:render template="/template/compositeItem"
+                  model="${[instance: instance, i: '{{$index}}',className:className, name: compositeProperty,ngrepeat:true]}"/>
     </div>
 
     <div class="compositeForm">
-        <img src="${fam.icon(name: 'add')}" alt="" onclick="addTo${compositeProperty}();" style="cursor: pointer;"/>
+        <img src="${fam.icon(name: 'add')}" alt="" ng-click="addComposite${compositeProperty}()" style="cursor: pointer;"/>
     </div>
 </div>
-
-<g:render template="/template/compositeItem"
-          model="${[instance: instance, i: '_clone', name: compositeProperty, hidden: true]}"/>
-<script type="text/javascript">
-    $(document).ready(function () {
-        var clone = $("#${compositeProperty}_clone");
-        var formParent = $("form").has(clone).parent();
-        var clones = formParent.find("#${compositeProperty}_clone");
-        if (clones.length > 1)
-            clone.remove();
-        else
-            clone.appendTo(formParent);
-    })
-</script>

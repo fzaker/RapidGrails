@@ -37,11 +37,11 @@ class FormTagLib {
                     if (modify.readonlyFields?.contains(p.name)) {
                         out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
                     }
-                    else if (p.type == Date.class) {
-                        out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
-                        out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
-                        out << "</div>"
-                    }
+//                    else if (p.type == Date.class) {
+//                        out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
+//                        out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
+//                        out << "</div>"
+//                    }
                     else
                         out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
                     count++
@@ -92,6 +92,17 @@ class FormTagLib {
                                 url = url + "/" + \$scope.${domainClass.propertyName}Instance.id;
                             sendSaveRequest(dialogId, gridId, url, domainClass, params);
                         }
+                """
+        props.each { p ->
+            if (composites?.contains(p.name)){
+                out <<"""
+                    \$scope.addComposite${p.name}= function() {
+                        \$scope.${domainClass.propertyName}Instance.${p.name}[\$scope.${domainClass.propertyName}Instance.${p.name}.length]={}
+                    }
+                """
+            }
+        }
+            out<<"""
                     }
                 </script>
             """
@@ -208,7 +219,7 @@ class FormTagLib {
 
     def compositeRow = { attrs, body ->
         def parent = attrs.parent
-        def index = (attrs.index == "_clone") ? null : Integer.valueOf(attrs.index)
+        def index = (attrs.index == "_clone" || attrs.index=='{{$index}}') ? null : Integer.valueOf(attrs.index)
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(parent.class.name)
         GrailsDomainClassProperty compositeProperty = domainClass.propertyMap[attrs.compositeProperty]
         def compositeDomainClass = compositeProperty.referencedDomainClass
@@ -219,11 +230,11 @@ class FormTagLib {
             compositeInstance = parent."${attrs.compositeProperty}"[index]
         else
             compositeInstance = compositeDomainClass.newInstance()
-
-        out << g.hiddenField(name: 'id', value: compositeInstance.id).replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
+        out << "<span style='display:none'>"
+        out << g.textField(name: 'id', value: compositeInstance.id,"ng-model": "item.id").replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
         out << g.hiddenField(name: 'deleted', value: compositeInstance.deleted).replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
-        out << g.hiddenField(name: 'new', value: compositeInstance?.id == null ? 'true' : 'false').replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
-
+        out << g.hiddenField(name: 'new', value:  attrs.index=='{{$index}}' ? 'false' : 'true').replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
+        out << '</span>'
         def excludedProperties = ["deleted", "indx"]
         def excludedTypes = []
         if (compositeInstance.belongsTo instanceof Map)
@@ -234,8 +245,8 @@ class FormTagLib {
         props.each { p ->
             if ((!excludedProperties.contains(p.name)) && (!excludedTypes.contains(p.type))) {
                 def label = message(code: "${p.domainClass.propertyName}.${p.name}.label", default: message(code: "${p.name}.label", default: p.naturalName))
-                def field = f.input(bean: compositeInstance, property: p.name, class: "compositionField", placeholder: label)
-                out << field.replaceAll("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
+                def field = f.input(bean: compositeInstance, property: p.name, class: "compositionField", placeholder: label,"ng-model": "item.value")
+                out << field.replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
             }
         }
     }
