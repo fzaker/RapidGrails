@@ -42,8 +42,12 @@ class FormTagLib {
 //                        out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
 //                        out << "</div>"
 //                    }
-                    else
-                        out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
+                    else{
+                        def ngModel="${domainClass.propertyName}Instance.${p.name}"
+                        if(p.manyToOne || p.manyToMany || p.oneToOne)
+                            ngModel+=".id"
+                        out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel)
+                    }
                     count++
                 }
                 if (count >= 10) {
