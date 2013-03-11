@@ -229,7 +229,19 @@ class RapidGrailsController {
         def obj = domainClass.clazz.findById(params.id)
         def res = [:]
         domainClass.properties.each {
-            res[it.name] = obj[it.name]
+            def val = obj[it.name]
+            if (it.oneToMany || it.manyToMany) {
+                res[it.name] = []
+                obj[it.name].each { item ->
+                    def itemVal = [:]
+                    item.domainClass.properties.each {
+                        itemVal[it.name] = item[it.name]
+                    }
+                    res[it.name] << itemVal
+                }
+            }
+            else
+                res[it.name] = val
         }
         render res as JSON
     }

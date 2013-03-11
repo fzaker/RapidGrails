@@ -23,6 +23,6 @@
     </div>
 
     <div class="compositeForm">
-        <img src="${fam.icon(name: 'add')}" alt="" ng-click="addComposite${compositeProperty}()" style="cursor: pointer;"/>
+        <img src="${fam.icon(name: 'add')}" alt="" id="addComposite${compositeProperty}" ng-click="addComposite${compositeProperty}()" style="cursor: pointer;"/>
     </div>
 </div>

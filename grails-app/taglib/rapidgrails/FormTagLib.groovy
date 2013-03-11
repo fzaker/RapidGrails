@@ -6,7 +6,6 @@ import grails.converters.JSON
 
 class FormTagLib {
     static namespace = "rg"
-
     def fields = { attrs, body ->
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(attrs.bean.class.name)
         def props = TaglibHelper.getDomainClassProperties(domainClass)
@@ -14,50 +13,54 @@ class FormTagLib {
 
         request.setAttribute("interceptCreateDialog", "")
         request.setAttribute("modify", [:])
-
+        request.setAttribute("bean", attrs.bean)
         out << "<form>"
         out << "<div class=\"form-fields\"><div class=\"form-fields-part\">"
         out << body()
         def modify = request.getAttribute("modify")
-
+        def template = request.getAttribute("template")
+        if (!template) {
 //        out << g.hiddenField(name: "id", value: "0", "ng-model": "${domainClass.propertyName}Instance.id")
-        def count = 0
-        def newColumn = false
-        props.each { p ->
-            if (!modify.ignoredFields?.contains(p.name)) {
-                if (composites?.contains(p.name))
-                    out << compositeRows(bean: attrs.bean, property: p.name, className: p.domainClass.propertyName)
-                else if (modify.hiddenReferences?.contains(p.name))
-                    out << g.hiddenField(name: "${p.name}.id", "value": "{{${domainClass.propertyName}Instance.${p.name}.id}}")
-                else {
-                    if (newColumn) {
-                        out << "</div><div class=\"form-fields-part\">"
-                        newColumn = false
+            def count = 0
+            def newColumn = false
+            props.each { p ->
+                if (!modify.ignoredFields?.contains(p.name)) {
+                    if (composites?.contains(p.name))
+                        out << compositeRows(bean: attrs.bean, property: p.name, className: p.domainClass.propertyName)
+                    else if (modify.hiddenReferences?.contains(p.name))
+                        out << g.hiddenField(name: "${p.name}.id", "value": "{{${domainClass.propertyName}Instance.${p.name}.id}}")
+                    else {
+                        if (newColumn) {
+                            out << "</div><div class=\"form-fields-part\">"
+                            newColumn = false
+                        }
+                        def c = domainClass.constraints[p.name]
+
+                        if (modify.readonlyFields?.contains(p.name)) {
+                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
+                        }
+                        else if (p.type == Date.class && c?.metaConstraints?.persian) {
+                            out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
+                            out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
+                            out << "</div>"
+                        }
+                        else {
+                            def ngModel = "${domainClass.propertyName}Instance.${p.name}"
+                            if (p.manyToOne || p.manyToMany || p.oneToOne)
+                                ngModel += ".id"
+                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel,"input-valueMessagePrefix":"${p.domainClass.propertyName}.${p.name}")
+                        }
+                        count++
                     }
-                    if (modify.readonlyFields?.contains(p.name)) {
-                        out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
+                    if (count >= 10) {
+                        count = 0
+                        newColumn = true
                     }
-//                    else if (p.type == Date.class) {
-//                        out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
-//                        out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
-//                        out << "</div>"
-//                    }
-                    else{
-                        def ngModel="${domainClass.propertyName}Instance.${p.name}"
-                        if(p.manyToOne || p.manyToMany || p.oneToOne)
-                            ngModel+=".id"
-                        out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel)
-                    }
-                    count++
-                }
-                if (count >= 10) {
-                    count = 0
-                    newColumn = true
                 }
             }
-        }
-        modify.extraFields.each {
-            out << it
+            modify.extraFields.each {
+                out << it
+            }
         }
 
         out << "</div></div>"
@@ -98,27 +101,66 @@ class FormTagLib {
                         }
                 """
         props.each { p ->
-            if (composites?.contains(p.name)){
-                out <<"""
+            if (composites?.contains(p.name)) {
+                out << """
                     \$scope.addComposite${p.name}= function() {
+                        if(!\$scope.${domainClass.propertyName}Instance.${p.name})
+                            \$scope.${domainClass.propertyName}Instance.${p.name}=[]
                         \$scope.${domainClass.propertyName}Instance.${p.name}[\$scope.${domainClass.propertyName}Instance.${p.name}.length]={}
                     }
                 """
             }
         }
-            out<<"""
+        out << """
                     }
                 </script>
             """
 
         request.removeAttribute("interceptCreateDialog")
         request.removeAttribute("modify")
+        request.removeAttribute("template")
+        request.removeAttribute("bean")
     }
 
     def interceptCreateDialog = { attrs, body ->
         request.setAttribute("interceptCreateDialog", body())
     }
+    def template = {attrs, body ->
+        request.setAttribute("template", true)
+        out << body()
+    }
+    def formColumn = {attrs, body ->
+        out << "</div><div class=\"form-fields-part\">"
+        out << body()
+    }
+    def field = {attrs, body ->
+        def bean = request.getAttribute("bean")
+        def composites = bean.hasProperty("composites") ? bean.composites : null
+        def fieldName = attrs.name
+        DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(bean.class.name)
+        def p = domainClass.propertyMap[fieldName]
+        if (p) {
+            if (composites?.contains(p.name))
+                out << compositeRows(bean: bean, property: p.name, className: p.domainClass.propertyName)
+            else {
 
+                def c = domainClass.constraints[p.name]
+
+                if (p.type == Date.class && c?.metaConstraints?.persian) {
+                    out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
+                    out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
+                    out << "</div>"
+                }
+                else {
+                    def ngModel = "${domainClass.propertyName}Instance.${p.name}"
+                    if (p.manyToOne || p.manyToMany || p.oneToOne)
+                        ngModel += ".id"
+                    out << f.field(bean: bean, property: p.name, "input-ng-model": ngModel,"input-valueMessagePrefix":"${p.domainClass.propertyName}.${p.name}")
+                }
+            }
+        }
+
+    }
     def modify = { attrs, body ->
         def modify = request.getAttribute("modify")
         modify.hiddenReferences = []
@@ -223,7 +265,7 @@ class FormTagLib {
 
     def compositeRow = { attrs, body ->
         def parent = attrs.parent
-        def index = (attrs.index == "_clone" || attrs.index=='{{$index}}') ? null : Integer.valueOf(attrs.index)
+        def index = (attrs.index == "_clone" || attrs.index == '{{$index}}') ? null : Integer.valueOf(attrs.index)
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(parent.class.name)
         GrailsDomainClassProperty compositeProperty = domainClass.propertyMap[attrs.compositeProperty]
         def compositeDomainClass = compositeProperty.referencedDomainClass
@@ -235,9 +277,9 @@ class FormTagLib {
         else
             compositeInstance = compositeDomainClass.newInstance()
         out << "<span style='display:none'>"
-        out << g.textField(name: 'id', value: compositeInstance.id,"ng-model": "item.id").replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
+        out << g.textField(name: 'id', value: compositeInstance.id, "ng-model": "item.id").replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
         out << g.hiddenField(name: 'deleted', value: compositeInstance.deleted).replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
-        out << g.hiddenField(name: 'new', value:  attrs.index=='{{$index}}' ? 'false' : 'true').replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
+        out << g.hiddenField(name: 'new', value: attrs.index == '{{$index}}' ? 'false' : 'true').replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
         out << '</span>'
         def excludedProperties = ["deleted", "indx"]
         def excludedTypes = []
@@ -249,8 +291,16 @@ class FormTagLib {
         props.each { p ->
             if ((!excludedProperties.contains(p.name)) && (!excludedTypes.contains(p.type))) {
                 def label = message(code: "${p.domainClass.propertyName}.${p.name}.label", default: message(code: "${p.name}.label", default: p.naturalName))
-                def field = f.input(bean: compositeInstance, property: p.name, class: "compositionField", placeholder: label,"ng-model": "item.value")
-                out << field.replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
+                def ngModel = "item.${p.name}"
+//                if (p.oneToOne || p.manyToOne || p.manyToMany)
+//                    ngModel += ".id"
+
+                def field = f.input(bean: compositeInstance, property: p.name, class: "compositionField", placeholder: label, "ng-model": ngModel,
+                        propertyIndex: attrs.index, compositeProperty: attrs.compositeProperty,"input-valueMessagePrefix":"${p.domainClass.propertyName}.${p.name}")
+                if (p.oneToOne || p.manyToOne || p.manyToMany)
+                    out << field
+                else
+                    out << field.replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
             }
         }
     }
