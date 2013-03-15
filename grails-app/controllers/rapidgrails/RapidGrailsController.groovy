@@ -100,7 +100,7 @@ class RapidGrailsController {
 
 //                                        v = f.val.asType(property.type)
                                     }
-                                    if(f.val)
+                                    if (f.val)
                                         "${f.op}"(f.field, v)
                                     else
                                         "${f.op}"(f.field)
@@ -246,10 +246,26 @@ class RapidGrailsController {
 
     def jsonInstance = {
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
-        JSON.use("deep") {
-            render domainClass.clazz.findById(params.id) as JSON
+        def obj = domainClass.clazz.findById(params.id)
+        def res = [:]
+        domainClass.properties.each {
+            def val = obj[it.name]
+            if (it.oneToMany || it.manyToMany) {
+                res[it.name] = []
+                obj[it.name].each { item ->
+                    def itemVal = [:]
+                    item.domainClass.properties.each {
+                        itemVal[it.name] = item[it.name]
+                    }
+                    res[it.name] << itemVal
+                }
+            }
+            else
+                res[it.name] = val
         }
+        render res as JSON
     }
+
 
     def getSampleCriteria() {
         def closure = {

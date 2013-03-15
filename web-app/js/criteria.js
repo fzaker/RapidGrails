@@ -20,7 +20,7 @@ var loadGridWithCriteria = function (gridId, criteria) {
     var grid = $("#" + gridId);
     var url = grid.getGridParam('url');
     var newUrl = setUrlParam(url, "filter", criteria);
-    grid.setGridParam({url:newUrl});
+    grid.setGridParam({url:newUrl,page:1});
     grid.trigger("reloadGrid");
 }
 
