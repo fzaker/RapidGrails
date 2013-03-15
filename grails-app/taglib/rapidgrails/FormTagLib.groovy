@@ -282,7 +282,7 @@ class FormTagLib {
         out << g.hiddenField(name: 'new', value: attrs.index == '{{$index}}' ? 'false' : 'true').replace("name=\"", "name=\"${attrs.compositeProperty}[${attrs.index}].")
         out << '</span>'
         def excludedProperties = ["deleted", "indx"]
-        def excludedTypes = []
+        def excludedTypes = [parent.class]
         if (compositeInstance.belongsTo instanceof Map)
             compositeInstance.belongsTo.each { excludedProperties << it.key}
         else if (compositeInstance.belongsTo instanceof List)
