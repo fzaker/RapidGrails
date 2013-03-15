@@ -110,7 +110,9 @@ class JqgridTagLib {
                 colModel << c
             }
         } else {
-            domainClass.constraints.keySet().eachWithIndex {it, index->
+            def hasTransients = domainClass.clazz.metaClass.hasProperty(domainClass.clazz, "transients")
+            def domainClassProperties = domainClass.constraints.keySet() + (hasTransients ? domainClass.clazz["transients"] : [])
+            domainClassProperties.eachWithIndex {it, index->
                 if (!excludedProperties.contains(it) && (index < maxColumnCount)) {
                     colNames << message(code: "${domainClass.propertyName}.${it}", default: it)
 
@@ -143,7 +145,10 @@ class JqgridTagLib {
         }
         def groupby = ""
         if (attrs.groupby) {
-            groupby = """grouping:true, groupingView : { groupField : ['${attrs.groupby}'], groupColumnShow : [false], groupText : ['<b>{0}</b>'] },"""
+            if ((attrs.groupby instanceof Collection) || (attrs.groupby.getClass().isArray()))
+                groupby = """grouping:true, groupingView : { groupField : ${attrs.groupby as JSON}, groupColumnShow : ${(attrs.groupby.collect { false }) as JSON}, groupText : ['<b>{0}</b>'] },"""
+            else
+                groupby = """grouping:true, groupingView : { groupField : ['${attrs.groupby}'], groupColumnShow : [false], groupText : ['<b>{0}</b>'] },"""
         }
         def ondblClickRow = ""
         if (attrs.ondblClickRow) {
@@ -192,6 +197,7 @@ class JqgridTagLib {
         }
 
         def tagBody = """
+        <div id="${gridName}Container">
         <table id="${gridName}" ${attrs.width? "style=\"width:${attrs.width}\"" : ""}></table>
         <div id="${domainClass.shortName}${attrs.idPostfix?:""}Pager"></div>
         <script type="text/javascript">
@@ -248,7 +254,7 @@ class JqgridTagLib {
                 ${groupby}
                 ${ondblClickRow}
                 ${onSelectRow}
-                cellLayout: 12,
+                cellLayout: 5,
                 altRows: true,
                 altclass: "altrow",
                 caption: "${caption}"
@@ -257,6 +263,7 @@ class JqgridTagLib {
 
 
         </script>
+        </div>
         """
 
         def initialCommand = ""

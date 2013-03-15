@@ -118,7 +118,21 @@ class RapidGrailsController {
                 }
                 if (list) {
                     if (params.sort) {
-                        "${"order"}"(params.sort, params.order)
+                        String sidx = params.sort.trim()
+                        if (sidx.endsWith(","))
+                            sidx = sidx[0..-2]
+                        else
+                            sidx = sidx + " " + params.order
+                        def sorts = sidx.split(",").collect {
+                            def parts = it.split(" ")
+                            parts = (parts - "") - " "
+                            [name: parts[0].trim(), order: parts[1].trim()]
+                        }
+                        "${"and"}" {
+                            sorts.each { sortItem ->
+                                "${"order"}"(sortItem.name, sortItem.order ?: "asc")
+                            }
+                        }
                     }
 
                     if (params.offset)
@@ -157,11 +171,17 @@ class RapidGrailsController {
                     expressions[it.name] = it.expression
             }
         } else {
-            domainClass.constraints.keySet().eachWithIndex {pname, index ->
-                if (!excludedProperties.contains(pname) && (index < maxColumnCount)) {
+            domainClass.constraints.keySet().each { pname ->
+                if (!excludedProperties.contains(pname) && (colNames.size() < maxColumnCount)) {
                     colNames << pname
                 }
             }
+            def hasTransients = domainClass.clazz.metaClass.hasProperty(domainClass.clazz, "transients")
+            if (hasTransients)
+                domainClass.clazz.transients?.each { pname ->
+                    if (!excludedProperties.contains(pname) && (colNames.size() < maxColumnCount))
+                        colNames << pname
+                }
         }
 
         def binding = new Binding()

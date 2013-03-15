@@ -5,9 +5,10 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-	$.jgrid = {
+	$.jgrid = $.jgrid || {};
+	$.extend($.jgrid,{
         defaults: {
-            recordtext: "نمایش {0} - {1} از <span>{2}</span>",
+            recordtext: "نمابش {0} - {1} از {2}",
             emptyrecords: "رکوردی یافت نشد",
             loadtext: "بارگزاري...",
             pgtext: "صفحه {0} از {1}"
@@ -141,5 +142,5 @@
             },
             idName: "id"
         }
-    }
+    });
 })(jQuery);
