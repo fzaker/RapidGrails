@@ -87,12 +87,19 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
 }
 
 var genericDelete = function(remoteAddress, gridName, domainClass, id) {
-    var data = {id: id, domainClass: domainClass}
-    $.ajax({
-        type:"GET",
-        url: remoteAddress,
-        data: data
-    }).done(function (response) {
-        jQuery("#" + gridName).trigger("reloadGrid");
-    });
+    if(confirm('آیا از حذف رکورد اطمینان دارید؟')){
+        var data = {id: id, domainClass: domainClass}
+        $.ajax({
+            type:"GET",
+            url: remoteAddress,
+            data: data
+        }).done(function (response) {
+                if(response=='1'){
+                    jQuery("#" + gridName).trigger("reloadGrid");
+                }
+                else{
+                    alert(response)
+                }
+        });
+    }
 }

@@ -293,14 +293,21 @@ class RapidGrailsController {
             instance = domainClass.newInstance()
         bindData(instance, params)
         bindComposites(instance, params)
-        instance.save()
-        render "1"
+        if(instance.save()){
+            render "1"
+        }else{
+            render instance.errors.allErrors.collect{g.message(error: it)} as JSON
+        }
     }
 
     def delete = {
-        DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
-        def instance = domainClass.clazz.findById(params.id)
-        instance.delete(flush: true)
-        render "1"
+        try{
+            DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
+            def instance = domainClass.clazz.findById(params.id)
+            instance.delete(flush: true)
+            render "1"
+        }catch (e){
+            render message(code: 'default.not.deleted.message')
+        }
     }
 }

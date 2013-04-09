@@ -15,6 +15,7 @@ class FormTagLib {
         request.setAttribute("modify", [:])
         request.setAttribute("bean", attrs.bean)
         out << "<form>"
+        out << "<div class='form-validation errors' style='display:none'>${message(code:'form-errors')}</div>"
         out << "<div class=\"form-fields\"><div class=\"form-fields-part\">"
         out << body()
         def modify = request.getAttribute("modify")
@@ -48,7 +49,10 @@ class FormTagLib {
                             def ngModel = "${domainClass.propertyName}Instance.${p.name}"
                             if (p.manyToOne || p.manyToMany || p.oneToOne)
                                 ngModel += ".id"
-                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel,"input-valueMessagePrefix":"${p.domainClass.propertyName}.${p.name}")
+                            def nullable = c.appliedConstraints.find {it.name == 'nullable'}.nullable
+
+                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel, "input-valueMessagePrefix": "${p.domainClass.propertyName}.${p.name}", required: !nullable)
+
                         }
                         count++
                     }
@@ -82,6 +86,7 @@ class FormTagLib {
                             if (!\$scope.\$\$phase)
                                 \$scope.\$apply();
 
+                            jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code:'form-errors')}');
                             jQuery("#${domainClass.propertyName}").dialog('open');
                         }
 
@@ -90,6 +95,7 @@ class FormTagLib {
                             var url = "${g.createLink(plugin: "rapid-grails", controller: "rapidGrails", action: "jsonInstance")}/" + selectedRow + "?domainClass=${domainClass.fullName}";
                             \$http.get(url).success(function(data, status, headers, config) {
                                 \$scope.${domainClass.propertyName}Instance = data;
+                                jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code:'form-errors')}');
                                 jQuery("#${domainClass.propertyName}").dialog('open');
                             });
                         }
@@ -155,7 +161,7 @@ class FormTagLib {
                     def ngModel = "${domainClass.propertyName}Instance.${p.name}"
                     if (p.manyToOne || p.manyToMany || p.oneToOne)
                         ngModel += ".id"
-                    out << f.field(bean: bean, property: p.name, "input-ng-model": ngModel,"input-valueMessagePrefix":"${p.domainClass.propertyName}.${p.name}")
+                    out << f.field(bean: bean, property: p.name, "input-ng-model": ngModel, "input-valueMessagePrefix": "${p.domainClass.propertyName}.${p.name}")
                 }
             }
         }
@@ -296,7 +302,7 @@ class FormTagLib {
 //                    ngModel += ".id"
 
                 def field = f.input(bean: compositeInstance, property: p.name, class: "compositionField", placeholder: label, "ng-model": ngModel,
-                        propertyIndex: attrs.index, compositeProperty: attrs.compositeProperty,"input-valueMessagePrefix":"${p.domainClass.propertyName}.${p.name}")
+                        propertyIndex: attrs.index, compositeProperty: attrs.compositeProperty, "input-valueMessagePrefix": "${p.domainClass.propertyName}.${p.name}")
                 if (p.oneToOne || p.manyToOne || p.manyToMany)
                     out << field
                 else
