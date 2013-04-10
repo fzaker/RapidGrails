@@ -25,16 +25,29 @@ function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, para
     //load jquery.form.js from rapidgrails/web-app/js/
 
     var frm = jQuery("#" + formContainerId + ">form");
-    frm.ajaxSubmit({
-        url: url,
-        type:(params && params.method)?params.method:"get",
-        data: {domainClass:domainClass},
-        success: function(response) {
-            jQuery("#" + capitaliseFirstLetter(gridItToReload) + "Grid").trigger('reloadGrid');
-            jQuery("#" + formContainerId).dialog("close")
-            if(params && params.saveCallback){
-                eval(params.saveCallback+"(response)");
+    if(frm.find('.ng-invalid').length>0){
+        frm.find('.form-validation').show()
+    }else{
+        frm.ajaxSubmit({
+            url: url,
+            type:(params && params.method)?params.method:"get",
+            data: {domainClass:domainClass},
+            success: function(response) {
+                if(typeof(response)=='object' && response.length>0){
+                    var validation = frm.find('.form-validation')
+                    validation.html('')
+                    $(response).each(function(){
+                        validation.append('<div>'+this+'</div>')
+                    })
+                    validation.show()
+                }else{
+                    jQuery("#" + capitaliseFirstLetter(gridItToReload) + "Grid").trigger('reloadGrid');
+                    jQuery("#" + formContainerId).dialog("close")
+                    if(params && params.saveCallback){
+                        eval(params.saveCallback+"(response)");
+                    }
+                }
             }
-        }
-    })
+        })
+    }
 }

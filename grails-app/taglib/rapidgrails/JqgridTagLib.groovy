@@ -106,7 +106,7 @@ class JqgridTagLib {
                 if (it.formatoptions)
                     c.formatoptions = it.formatoptions
                 else if (property && (property.type in [java.lang.Double, java.lang.Integer, java.lang.Long, java.lang.Short]))
-                    c.formatoptions = [thousandsSeparator: ","]
+                    c.formatoptions = [thousandsSeparator: ",", decimalPlaces:0]
                 colModel << c
             }
         } else {
@@ -122,7 +122,7 @@ class JqgridTagLib {
                     if (property.type in [java.lang.Double, java.lang.Integer, java.lang.Long, java.lang.Short])
                         c.formatter = "currency"
                     if (property && (property.type in [java.lang.Double, java.lang.Integer, java.lang.Long, java.lang.Short]))
-                        c.formatoptions = [thousandsSeparator: ","]
+                        c.formatoptions = [thousandsSeparator: ",", decimalPlaces:0]
                     colModel << c
                 }
             }
