@@ -19,7 +19,17 @@ function setUrlParam(url, param_name, param_value) {
     var add_param = temp + param_name + "=" + param_value;
     return baseURL + "?" + newAdditionalURL + add_param;
 }
-
+function removeNulls(obj){
+    if(typeof(obj)=='object'){
+        var res={};
+        for(var key in obj){
+            if(obj[key])
+                res[key]=removeNulls(obj[key])
+        }
+        return res
+    }
+    return obj
+}
 function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, params) {
 
     //load jquery.form.js from rapidgrails/web-app/js/
