@@ -74,10 +74,10 @@ class FormTagLib {
             out << """
                 <script type="text/javascript">
                     function getFresh${domainClass.propertyName}Instance() {
-                        return ${domainClass.newInstance() as JSON};
+                        return {};
                     }
                     function ${domainClass.propertyName}Controller(\$scope, \$http) {
-                        //\$scope.${domainClass.propertyName}Instance = getFresh${domainClass.propertyName}Instance();
+                        \$scope.${domainClass.propertyName}Instance = getFresh${domainClass.propertyName}Instance();
 
                         \$scope.open${domainClass.propertyName.capitalize()}CreateDialog = function() {
                             \$scope.${domainClass.propertyName}Instance = getFresh${domainClass.propertyName}Instance();
@@ -94,7 +94,7 @@ class FormTagLib {
                             var selectedRow = jQuery('#${domainClass.shortName}Grid').jqGrid('getGridParam','selrow'); // returns id of selected object
                             var url = "${g.createLink(plugin: "rapid-grails", controller: "rapidGrails", action: "jsonInstance")}/" + selectedRow + "?domainClass=${domainClass.fullName}";
                             \$http.get(url).success(function(data, status, headers, config) {
-                                \$scope.${domainClass.propertyName}Instance = data;
+                                \$scope.${domainClass.propertyName}Instance = removeNulls(data);
                                 jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code:'form-errors')}');
                                 jQuery("#${domainClass.propertyName}").dialog('open');
                             });

@@ -1,1 +1,1 @@
-<g:render template="/_fields/domainClass/input" model="attrs"/>
+%{--<g:render template="/_fields/domainClass/input" model="attrs"/>--}%

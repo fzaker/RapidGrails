@@ -250,18 +250,21 @@ class RapidGrailsController {
         def res = [:]
         domainClass.properties.each {
             def val = obj[it.name]
-            if (it.oneToMany || it.manyToMany) {
-                res[it.name] = []
-                obj[it.name].each { item ->
-                    def itemVal = [:]
-                    item.domainClass.properties.each {
-                        itemVal[it.name] = item[it.name]
+            if(val){
+                if (it.oneToMany || it.manyToMany) {
+                    res[it.name] = []
+                    val.each { item ->
+                        def itemVal = [:]
+                        item.domainClass.properties.each {
+                            if(item[it.name])
+                                itemVal[it.name] = item[it.name]
+                        }
+                        res[it.name] << itemVal
                     }
-                    res[it.name] << itemVal
                 }
+                else
+                    res[it.name] = val
             }
-            else
-                res[it.name] = val
         }
         render res as JSON
     }
