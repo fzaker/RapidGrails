@@ -50,7 +50,7 @@ class FormTagLib {
                                 ngModel += ".id"
                             def nullable = c.appliedConstraints.find { it.name == 'nullable' }.nullable
 
-                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel, "input-valueMessagePrefix": "${p.domainClass.propertyName}.${p.name}", required: !nullable)
+                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel,"input-ngmodel":ngModel, "input-valueMessagePrefix": "${p.domainClass.propertyName}.${p.name}", required: !nullable)
 
                         }
                         count++

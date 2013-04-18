@@ -250,13 +250,13 @@ class RapidGrailsController {
         def res = [:]
         domainClass.properties.each {
             def val = obj[it.name]
-            if(val){
+            if (val) {
                 if (it.oneToMany || it.manyToMany) {
                     res[it.name] = []
                     val.each { item ->
                         def itemVal = [:]
                         item.domainClass.properties.each {
-                            if(item[it.name])
+                            if (item[it.name])
                                 itemVal[it.name] = item[it.name]
                         }
                         res[it.name] << itemVal
@@ -294,22 +294,48 @@ class RapidGrailsController {
             instance = domainClass.clazz.findById(params.id)
         else
             instance = domainClass.newInstance()
-        bindData(instance, params)
+
+        def newParams = params
+        if (instance.hasProperty("composites")) {
+            def composites = instance.composites
+            newParams = params.findAll {p -> !composites.any {p.key.startsWith(it)}}
+        }
+        bindData(instance, newParams)
+        if (instance.hasProperty("composites")) {
+            def composites = instance.composites
+            composites.each {composit ->
+                params.findAll{it.key.startsWith(composit) && it.value instanceof Map}
+                    .each {
+                    def methodName=composit[0].toUpperCase()+composit.substring(1);
+                    def compositParams=it.value
+                    def compositInstance
+                    if(compositParams.id){
+                        compositInstance=instance."${composit}".find{(compositParams.id as Long)==it.id}
+                    }
+                    else{
+                        compositInstance=domainClass.propertyMap[composit].referencedDomainClass.clazz.newInstance()
+
+                        instance."addTo${methodName}"(compositInstance)
+                    }
+                    bindData(compositInstance,compositParams)
+                }
+            }
+        }
         bindComposites(instance, params)
-        if(instance.save()){
+        if (instance.save()) {
             render "1"
-        }else{
-            render instance.errors.allErrors.collect{g.message(error: it)} as JSON
+        } else {
+            render instance.errors.allErrors.collect {g.message(error: it)} as JSON
         }
     }
 
     def delete = {
-        try{
+        try {
             DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
             def instance = domainClass.clazz.findById(params.id)
             instance.delete(flush: true)
             render "1"
-        }catch (e){
+        } catch (e) {
             render message(code: 'default.not.deleted.message')
         }
     }
