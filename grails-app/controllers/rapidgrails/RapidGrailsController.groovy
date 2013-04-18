@@ -313,4 +313,70 @@ class RapidGrailsController {
             render message(code: 'default.not.deleted.message')
         }
     }
+
+    def treeStructure = {
+        DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
+        def relationProperty
+        if (params.relationProperty)
+            relationProperty = domainClass.properties.find() { it.name.toLowerCase() == params.relationProperty.toLowerCase() }
+        else
+            relationProperty = domainClass.properties.find() { it.domainClass == domainClass }
+
+        def titleProperty
+        if (params.titleProperty)
+            titleProperty = domainClass.properties.find() { it.name.toLowerCase() == params.titleProperty.toLowerCase() }
+        else
+            titleProperty = domainClass.properties.find() { it.name.toLowerCase() == 'name' }
+
+        def selectedIds = []
+        if (params.selected)
+            selectedIds = params.selected.split(',').collect { it.toLong() }
+
+//        def recordList = domainClass.clazz.findAll()
+
+        def openIds = []
+        selectedIds.each { selectedId ->
+            def id = selectedId
+            def currentParentId = domainClass.clazz.createCriteria().list {
+                eq("id", id)
+            }.first()."${relationProperty.name}Id"
+            while (currentParentId) {
+                openIds << currentParentId
+                id = currentParentId
+                currentParentId = domainClass.clazz.createCriteria().list {
+                    eq("id", id)
+                }.first()."${relationProperty.name}Id"
+            }
+        }
+
+        def structure
+        if (params.id)
+            structure = fillRecordChildren([id: params.id.toLong()], domainClass, relationProperty, titleProperty, selectedIds, openIds)
+        else
+            structure = fillRecordChildren(null, domainClass, relationProperty, titleProperty, selectedIds, openIds)
+
+        render structure as grails.converters.JSON
+
+    }
+
+    def fillRecordChildren(root, domainClass, relationProperty, titleProperty, selectedIds, openIds) {
+        def recordList
+        if (root)
+            recordList = domainClass.clazz.createCriteria().list {
+                eq("${relationProperty.name}.id", root.id)
+            }.collect { [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []] }
+        else
+            recordList = domainClass.clazz.createCriteria().list {
+                isNull(relationProperty.name)
+            }.collect { [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []] }
+
+
+        recordList.each {
+            it.children = fillRecordChildren(it, domainClass, relationProperty, titleProperty, selectedIds, openIds)
+            if (it.children == [])
+                it.state = 'open'
+        }
+
+        return recordList
+    }
 }
