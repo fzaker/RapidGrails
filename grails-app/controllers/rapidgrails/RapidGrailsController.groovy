@@ -295,29 +295,31 @@ class RapidGrailsController {
         else
             instance = domainClass.newInstance()
 
-        def newParams = params
+        def newParams = params.clone()
         if (instance.hasProperty("composites")) {
             def composites = instance.composites
-            newParams = params.findAll {p -> !composites.any {p.key.startsWith(it)}}
+            params.findAll {p -> composites.any {p.key.startsWith(it)}}.each {
+                newParams.remove(it.key)
+            }
         }
         bindData(instance, newParams)
         if (instance.hasProperty("composites")) {
             def composites = instance.composites
             composites.each {composit ->
-                params.findAll{it.key.startsWith(composit) && it.value instanceof Map}
-                    .each {
-                    def methodName=composit[0].toUpperCase()+composit.substring(1);
-                    def compositParams=it.value
+                params.findAll {it.key.startsWith(composit) && it.value instanceof Map}
+                        .each {
+                    def methodName = composit[0].toUpperCase() + composit.substring(1);
+                    def compositParams = it.value
                     def compositInstance
-                    if(compositParams.id){
-                        compositInstance=instance."${composit}".find{(compositParams.id as Long)==it.id}
+                    if (compositParams.id) {
+                        compositInstance = instance."${composit}".find {(compositParams.id as Long) == it.id}
                     }
-                    else{
-                        compositInstance=domainClass.propertyMap[composit].referencedDomainClass.clazz.newInstance()
+                    else {
+                        compositInstance = domainClass.propertyMap[composit].referencedDomainClass.clazz.newInstance()
 
                         instance."addTo${methodName}"(compositInstance)
                     }
-                    bindData(compositInstance,compositParams)
+                    bindData(compositInstance, compositParams)
                 }
             }
         }
