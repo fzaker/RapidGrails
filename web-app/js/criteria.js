@@ -15,6 +15,15 @@ var loadGrid = function (group, gridId) {
     grid.setGridParam({url:newUrl,page:1});
     grid.trigger("reloadGrid");
 }
+var exportGrid = function (group, gridId) {
+    var eleman = $("#" + group);
+    var criteria = getCriteria(eleman);
+    var grid = $("#" + gridId);
+    var url = grid.getGridParam('url');
+    var newUrl = setUrlParam(url, "filter", $.toJSON(criteria));
+    var newUrl = setUrlParam(url, "export", 'true');
+    window.open(newUrl)
+}
 
 var loadGridWithCriteria = function (gridId, criteria) {
     var grid = $("#" + gridId);

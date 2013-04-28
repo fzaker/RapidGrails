@@ -9,15 +9,20 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.grails.datastore.gorm.mongo.MongoCriteriaBuilder
 
 class RapidGrailsController {
+    def exportService
+
     def jsonList = {
+        def export = params.export
+
         def max = Math.min(params.rows ? params.int('rows') : 10, 100)
-        def page = params.int("page")
-        def offset = (page - 1) * params.int("rows")
+        def page = export ? 0 : params.int("page")
+        def offset = export ? 0 : (page - 1) * params.int("rows")
+
         def sort = params.sidx ?: null
         def order = params.sord ?: null
 
         def tree = params.tree
-        def list = true
+        def list = !export
         def level
         def parentId
         if (tree) {
@@ -186,84 +191,104 @@ class RapidGrailsController {
 
         def binding = new Binding()
         def gs = new GroovyShell(binding)
+        def rows = instanceList.collect {
+            def cell = export ? [:] : []
 
-        render([page: page.toString(), total: total, records: records.toString(),
-                rows: instanceList.collect {
-                    def cell = []
-                    if (!params.showFirstColumn || Boolean.parseBoolean(params.showFirstColumn)) {
-                        cell << it.id.toString()
+            if (!params.showFirstColumn || Boolean.parseBoolean(params.showFirstColumn)) {
+                if (export)
+                    cell.id = it.id.toString()
+                else
+                    cell << it.id.toString()
+            }
+            colNames.each { col ->
+                if (expressions[col]) {
+                    binding.setVariable("obj", it)
+                    binding.setVariable("g", g)
+                    def v = gs.evaluate("${expressions[col]}")
+                    if ((v instanceof Double) || (v instanceof Float))
+                        v = String.format("%.2f", v)
+                    if (export)
+                        cell[col] = v
+                    else
+                        cell << v
+                } else {
+                    def v = it[col]
+                    if (v instanceof Date) {
+                        def cal = Calendar.getInstance()
+                        cal.setTime(v)
+                        def jc = new JalaliCalendar(cal)
+                        v = String.format("%04d/%02d/%02d", jc.getYear(), jc.getMonth(), jc.getDay())
+                    } else if (v instanceof String) {
+                        def code1 = "${domainClass.propertyName}.${col}.${v}"
+                        def code2 = "${col}.${v}"
+                        v = message(code: code1, default: message(code: code2, default: v))
+                    } else if ((v instanceof Double) || (v instanceof Float)) {
+                        v = String.format("%.2f", v)
+                    } else if (v == null)
+                        v = ""
+
+                    if (export)
+                        cell[col] = v.toString()
+                    else
+                        cell << v.toString()
+                }
+            }
+            if (tree) {
+                cell << level // level
+
+                if (!parentId)
+                    cell << parentId
+                else
+                    cell << Long.parseLong(parentId)
+
+                def currentObject = it
+                def childCountQuery = {
+                    eq("${tree}", currentObject)
+                    projections {
+                        rowCount()
                     }
-                    colNames.each { col ->
-                        if (expressions[col]) {
-                            binding.setVariable("obj", it)
-                            binding.setVariable("g", g)
-                            def v = gs.evaluate("${expressions[col]}")
-                            if ((v instanceof Double) || (v instanceof Float))
-                                v = String.format("%.2f", v)
-                            cell << v
-                        } else {
-                            def v = it[col]
-                            if (v instanceof Date) {
-                                def cal = Calendar.getInstance()
-                                cal.setTime(v)
-                                def jc = new JalaliCalendar(cal)
-                                v = String.format("%04d/%02d/%02d", jc.getYear(), jc.getMonth(), jc.getDay())
-                            } else if (v instanceof String) {
-                                def code1 = "${domainClass.propertyName}.${col}.${v}"
-                                def code2 = "${col}.${v}"
-                                v = message(code: code1, default: message(code: code2, default: v))
-                            } else if ((v instanceof Double) || (v instanceof Float)) {
-                                v = String.format("%.2f", v)
-                            } else if (v == null)
-                                v = ""
+                }
+                def childCount = domainClass.clazz.createCriteria().get(childCountQuery)
+                cell << (childCount == 0) //isLeaf
 
-                            cell << v.toString()
-                        }
-                    }
-                    if (tree) {
-                        cell << level // level
-
-                        if (!parentId)
-                            cell << parentId
-                        else
-                            cell << Long.parseLong(parentId)
-
-                        def currentObject = it
-                        def childCountQuery = {
-                            eq("${tree}", currentObject)
-                            projections {
-                                rowCount()
-                            }
-                        }
-                        def childCount = domainClass.clazz.createCriteria().get(childCountQuery)
-                        cell << (childCount == 0) //isLeaf
-
-                        cell << false //expanded
-                    }
-                    [id: it.id, cell: cell]
-                }, userdata: userData] as JSON)
+                cell << false //expanded
+            }
+            [id: it.id, cell: cell]
+        }
+        if (export) {
+            def colLabels = colNames.collectEntries {def res = [:]; res[it] = message(code: "${domainClass.propertyName}.${it}"); return res}
+            exportService.export("Excel", response, "export", "xls", rows.collect {it.cell}, colNames, colLabels, [:], [:])
+        }
+        else
+            render([page: page.toString(), total: total, records: records.toString(),
+                    rows: rows, userdata: userData] as JSON)
     }
 
     def jsonInstance = {
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
         def obj = domainClass.clazz.findById(params.id)
         def res = [:]
+        def ignored=[]
+        if(domainClass.hasProperty("ignoredFieldsInJSON"))
+            ignored=domainClass.clazz.ignoredFieldsInJSON
         domainClass.properties.each {
-            def val = obj[it.name]
-            if (val) {
-                if (it.oneToMany || it.manyToMany) {
-                    res[it.name] = []
-                    val.each { item ->
-                        def itemVal = [:]
-                        item.domainClass.properties.each {
-                            if (item[it.name])
-                                itemVal[it.name] = item[it.name]
+            if (!ignored.contains(it.name)) {
+                def val = obj[it.name]
+                if (val) {
+                    if (it.oneToMany || it.manyToMany) {
+                        res[it.name] = []
+                        val.each { item ->
+                            def itemVal = [:]
+                            item.domainClass.properties.each {
+                                if (item[it.name])
+                                    itemVal[it.name] = item[it.name]
+                            }
+                            res[it.name] << itemVal
                         }
-                        res[it.name] << itemVal
                     }
+                    else
+                        res[it.name] = val
                 }
-                else
-                    res[it.name] = val
             }
         }
         render res as JSON
