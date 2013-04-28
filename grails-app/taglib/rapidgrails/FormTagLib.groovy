@@ -49,8 +49,11 @@ class FormTagLib {
                             if (p.manyToOne || p.manyToMany || p.oneToOne)
                                 ngModel += ".id"
                             def nullable = c.appliedConstraints.find { it.name == 'nullable' }.nullable
+                            def fparams = [bean: attrs.bean, property: p.name, "input-ng-model": ngModel, "input-ngmodel": ngModel, required: !nullable]
+                            if (!p.manyToOne)
+                                fparams."input-valueMessagePrefix" = "${p.domainClass.propertyName}.${p.name}"
 
-                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel,"input-ngmodel":ngModel, "input-valueMessagePrefix": "${p.domainClass.propertyName}.${p.name}", required: !nullable)
+                            out << f.field(fparams)
 
                         }
                         count++
@@ -340,12 +343,12 @@ class FormTagLib {
             attrs.titleProperty = 'name'
 
         def selectedIds
-        if(field.oneToMany)
-            selectedIds = bean.properties[fieldName].collect{it.id}.join(',')
+        if (field.oneToMany)
+            selectedIds = bean.properties[fieldName].collect {it.id}.join(',')
         else
             selectedIds = bean.properties[relationFieldName].id.toString()
 
-        out << "<input id=\"${fieldName}\" name=\"${fieldName}\" class=\"combotree\" ${attrs.width?'style=\"width:' + attrs.width + ';\"':''}  ${field.oneToMany ? 'multiple' : ''} "
+        out << "<input id=\"${fieldName}\" name=\"${fieldName}\" class=\"combotree\" ${attrs.width ? 'style=\"width:' + attrs.width + ';\"' : ''}  ${field.oneToMany ? 'multiple' : ''} "
         out << "data-options=\"url:'${createLink(controller: "rapidGrails", action: "treeStructure", params: [domainClass: fieldDomainClass.fullName, relationProperty: relationFieldName, titleProperty: attrs.titleProperty, selected: selectedIds])}'\">"
         out << "<script language=\"javascript\">"
         out << "\$('#${fieldName}').combotree();"

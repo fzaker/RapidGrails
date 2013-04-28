@@ -90,6 +90,14 @@ class CriteriaTagLib {
         out << "<input type='button' onclick='loadGrid(\"${group}\", \"${attrs.grid}\")' value='${label}'>"
         out << "</input>"
     }
+    def exportGrid = {attrs, body ->
+        def group = request.getAttribute("group")
+        def labelMsg = attrs.label ?: "Export"
+        def label = g.message(code: labelMsg, default: labelMsg)
+        out << g.javascript(src: 'criteria.js', plugin: 'rapid-grails')
+        out << "<input type='button' onclick='exportGrid(\"${group}\", \"${attrs.grid}\")' value='${label}'>"
+        out << "</input>"
+    }
 
     private void closureOperator(attrs, body, operator) {
         def gridParams = request.getAttribute("gridParams")
@@ -119,8 +127,10 @@ class CriteriaTagLib {
             def from = attrs.from
             def optionKey = attrs.optionkey
             def noSelection = attrs.noSelection
+            def idPrefix = attrs.idPrefix
             def datePicker = attrs.datePicker
-            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker])
+            def valueMessagePrefix = attrs.valueMessagePrefix
+            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker,idPrefix:idPrefix,valueMessagePrefix:valueMessagePrefix])
         } else {
             if (attrs.value){
                 if(attrs.value instanceof String)

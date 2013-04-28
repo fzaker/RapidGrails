@@ -28,7 +28,7 @@ class CommonTagLib {
             });
             </script>
         """
-        tagBody += hiddenField(name:attrs.name, value:attrs.value)
+        tagBody += hiddenField(name: attrs.name, value: attrs.value)
 
         out << tagBody
     }
@@ -39,7 +39,7 @@ class CommonTagLib {
                 <div id="colorSelector"><div style="background-color: ${com.shayen.afc.util.ColorUtil.getHexString(attrs.value)}"></div></div>
             </p>
         """
-        tagBody += hiddenField(name:attrs.name, value:attrs.value)
+        tagBody += hiddenField(name: attrs.name, value: attrs.value)
 
         out << tagBody
     }
@@ -54,9 +54,9 @@ class CommonTagLib {
         //  sets the style to override height and/or width if either of them
         //  is specified, else the default from the CSS is taken
         style = "style='"
-        if(attrs.height)
+        if (attrs.height)
             style += "height:${attrs.height};"
-        if(attrs.width)
+        if (attrs.width)
             style += "width:${attrs.width};"
 
         if (style.length() == "style='".length())
@@ -64,7 +64,7 @@ class CommonTagLib {
         else
             style += "'" // closing single quote
 
-        html = "<ul class='CheckBoxList ${attrs.inline?"inline":""}' " + style + ">"
+        html = "<ul class='CheckBoxList ${attrs.inline ? "inline" : ""}' " + style + ">"
 
         out << html
 
@@ -73,13 +73,13 @@ class CommonTagLib {
             // but grails does not recognize index suffix in the name as an array:
             //      cname = "${attrs.name}[${idx++}]"
             //      and put this inside the li: <label for='$cname'>...</label>
-            def val=(attrs.optionKey && obj.hasProperty(attrs.optionKey))?obj."${attrs.optionKey}":obj
+            def val = (attrs.optionKey && (obj.hasProperty(attrs.optionKey) || (obj instanceof Map && obj[attrs.optionKey]))) ? obj."${attrs.optionKey}" : obj
 
-            isChecked = (value?.contains(val))? true: false
+            isChecked = (value?.contains(val)) ? true : false
 
             out << "<li>" <<
-                    checkBox(name:cname, value:val, checked: isChecked) <<
-                    "${translate?message(code: obj.toString()):obj}" << "</li>"
+                    checkBox(name: cname, value: val, checked: isChecked) <<
+                    "${obj.label ?: (translate ? message(code: obj.toString()) : obj)}" << "</li>"
         }
         out << "</ul>"
     }
