@@ -271,6 +271,7 @@ class RapidGrailsController {
         def ignored=[]
         if(domainClass.hasProperty("ignoredFieldsInJSON"))
             ignored=domainClass.clazz.ignoredFieldsInJSON
+        ignored<<'springSecurityService'
         domainClass.properties.each {
             if (!ignored.contains(it.name)) {
                 def val = obj[it.name]
