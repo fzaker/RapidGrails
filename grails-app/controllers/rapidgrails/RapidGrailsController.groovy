@@ -228,9 +228,9 @@ class RapidGrailsController {
                         v = ""
 
                     if (export)
-                        cell[col] = v.toString()
+                        cell[col] = v?.toString()
                     else
-                        cell << v.toString()
+                        cell << v?.toString()
                 }
             }
             if (tree) {
