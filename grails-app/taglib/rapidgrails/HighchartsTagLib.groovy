@@ -37,6 +37,7 @@ class HighchartsTagLib {
     }
 
     def barChart = { attrs, body, chart, domainClass ->
+        params.chart=chart
         def serviceResponse = ReportDataReader.fromService(domainClass.propertyName, "report", params)
         def list = serviceResponse.list
         def locale = new Locale("en")
@@ -49,7 +50,7 @@ class HighchartsTagLib {
         def tagBody = """
             <script type="text/javascript">
                 var chart;
-                //jQuery(document).ready(function() {
+                jQuery(document).ready(function() {
                    chart = new Highcharts.Chart({
                       chart: {
                          renderTo: '${attrs.id}',
@@ -98,7 +99,7 @@ class HighchartsTagLib {
                       },
                       series: ${series as JSON}
                    });
-                //});
+                });
                 </script>
                 <div id="${attrs.id}"></div>
             """
@@ -106,6 +107,7 @@ class HighchartsTagLib {
     }
 
     def pieChart = { attrs, body, Chart chart, domainClass ->
+        params.chart=chart
         def serviceResponse = ReportDataReader.fromService(domainClass.propertyName, "report", params)
         def list = serviceResponse.list
         def locale = new Locale("en")
@@ -171,7 +173,7 @@ class HighchartsTagLib {
                         },
                         tooltip: {
                             formatter: function() {
-                                return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                                return  this.point.name?this.point.name +': '+ Math.round(this.percentage*100)/100 +' %':'';
                             }
                         },
                         plotOptions: {
@@ -188,7 +190,7 @@ class HighchartsTagLib {
                                     color: '#000000',
                                     connectorColor: '#000000',
                                     formatter: function() {
-                                        return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                                        return  this.point.name? Math.round(this.percentage*100)/100 +' %':'';
                                     }
                                 }
                             }

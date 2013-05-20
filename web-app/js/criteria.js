@@ -15,6 +15,15 @@ var loadGrid = function (group, gridId) {
     grid.setGridParam({url:newUrl,page:1});
     grid.trigger("reloadGrid");
 }
+var exportGrid = function (group, gridId) {
+    var eleman = $("#" + group);
+    var criteria = getCriteria(eleman);
+    var grid = $("#" + gridId);
+    var url = grid.getGridParam('url');
+    var newUrl = setUrlParam(url, "filter", $.toJSON(criteria));
+    var newUrl = setUrlParam(url, "export", 'true');
+    window.open(newUrl)
+}
 
 var loadGridWithCriteria = function (gridId, criteria) {
     var grid = $("#" + gridId);
@@ -51,6 +60,16 @@ var getCriteriaRecursive = function (eleman) {
         criteria = {};
         criteria.op = op;
         var v = $(eleman).val();
+        if(v=='date.struct'){
+            var name=$(eleman).attr("id")
+            var year=$("#"+name+"_year").val()
+            var month=$("#"+name+"_month").val()
+            var day=$("#"+name+"_day").val()
+            if(year && month && day)
+                v=year+"/"+month+"/"+day
+            else
+                v=''
+        }
         if ((op == 'like' || op == 'ilike') && v)
             v = '%25'+v+'%25';
         var f = $(eleman).attr("name");

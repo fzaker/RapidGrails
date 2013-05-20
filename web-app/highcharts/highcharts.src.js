@@ -1188,8 +1188,8 @@ defaultOptions = {
 
 	credits: {
 		enabled: true,
-		text: 'Highcharts.com',
-		href: 'http://www.highcharts.com',
+		text: '',
+		href: '',
 		position: {
 			align: 'right',
 			x: -10,

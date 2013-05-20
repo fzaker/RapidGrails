@@ -1,6 +1,7 @@
 package rapidgrails
 
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import grails.converters.JSON
 
@@ -15,7 +16,7 @@ class FormTagLib {
         request.setAttribute("modify", [:])
         request.setAttribute("bean", attrs.bean)
         out << "<form>"
-        out << "<div class='form-validation errors' style='display:none'>${message(code:'form-errors')}</div>"
+        out << "<div class='form-validation errors' style='display:none'>${message(code: 'form-errors')}</div>"
         out << "<div class=\"form-fields\"><div class=\"form-fields-part\">"
         out << body()
         def modify = request.getAttribute("modify")
@@ -39,19 +40,20 @@ class FormTagLib {
 
                         if (modify.readonlyFields?.contains(p.name)) {
                             out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
-                        }
-                        else if (p.type == Date.class && c?.metaConstraints?.persian) {
+                        } else if (p.type == Date.class && c?.metaConstraints?.persian) {
                             out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
                             out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
                             out << "</div>"
-                        }
-                        else {
+                        } else {
                             def ngModel = "${domainClass.propertyName}Instance.${p.name}"
                             if (p.manyToOne || p.manyToMany || p.oneToOne)
                                 ngModel += ".id"
-                            def nullable = c.appliedConstraints.find {it.name == 'nullable'}.nullable
+                            def nullable = c.appliedConstraints.find { it.name == 'nullable' }.nullable
+                            def fparams = [bean: attrs.bean, property: p.name, "input-ng-model": ngModel, "input-ngmodel": ngModel, required: !nullable]
+                            if (!p.manyToOne)
+                                fparams."input-valueMessagePrefix" = "${p.domainClass.propertyName}.${p.name}"
 
-                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": ngModel, "input-valueMessagePrefix": "${p.domainClass.propertyName}.${p.name}", required: !nullable)
+                            out << f.field(fparams)
 
                         }
                         count++
@@ -86,7 +88,7 @@ class FormTagLib {
                             if (!\$scope.\$\$phase)
                                 \$scope.\$apply();
 
-                            jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code:'form-errors')}');
+                            jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code: 'form-errors')}');
                             jQuery("#${domainClass.propertyName}").dialog('open');
                         }
 
@@ -95,7 +97,7 @@ class FormTagLib {
                             var url = "${g.createLink(plugin: "rapid-grails", controller: "rapidGrails", action: "jsonInstance")}/" + selectedRow + "?domainClass=${domainClass.fullName}";
                             \$http.get(url).success(function(data, status, headers, config) {
                                 \$scope.${domainClass.propertyName}Instance = removeNulls(data);
-                                jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code:'form-errors')}');
+                                jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code: 'form-errors')}');
                                 jQuery("#${domainClass.propertyName}").dialog('open');
                             });
                         }
@@ -131,15 +133,15 @@ class FormTagLib {
     def interceptCreateDialog = { attrs, body ->
         request.setAttribute("interceptCreateDialog", body())
     }
-    def template = {attrs, body ->
+    def template = { attrs, body ->
         request.setAttribute("template", true)
         out << body()
     }
-    def formColumn = {attrs, body ->
+    def formColumn = { attrs, body ->
         out << "</div><div class=\"form-fields-part\">"
         out << body()
     }
-    def field = {attrs, body ->
+    def field = { attrs, body ->
         def bean = request.getAttribute("bean")
         def composites = bean.hasProperty("composites") ? bean.composites : null
         def fieldName = attrs.name
@@ -156,8 +158,7 @@ class FormTagLib {
                     out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
                     out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
                     out << "</div>"
-                }
-                else {
+                } else {
                     def ngModel = "${domainClass.propertyName}Instance.${p.name}"
                     if (p.manyToOne || p.manyToMany || p.oneToOne)
                         ngModel += ".id"
@@ -176,7 +177,7 @@ class FormTagLib {
         body()
     }
 
-    def extraField = {attrs, body ->
+    def extraField = { attrs, body ->
         def modify = request.getAttribute("modify")
         def extraFields = modify.extraFields
         extraFields << body()
@@ -290,7 +291,7 @@ class FormTagLib {
         def excludedProperties = ["deleted", "indx"]
         def excludedTypes = [parent.class]
         if (compositeInstance.belongsTo instanceof Map)
-            compositeInstance.belongsTo.each { excludedProperties << it.key}
+            compositeInstance.belongsTo.each { excludedProperties << it.key }
         else if (compositeInstance.belongsTo instanceof List)
             excludedTypes = compositeInstance.belongsTo
 
@@ -327,5 +328,78 @@ class FormTagLib {
 //                <input type="button" ng-click="open${shortName}EditDialog()" value="Edit ${shortName}"/>
 //            </div>
 //        """
+    }
+
+    def tree = { attrs, body ->
+        def bean = attrs.bean
+        GrailsDomainClass domainClass = bean.domainClass
+        String fieldName = attrs.field
+        GrailsDomainClassProperty field = domainClass.properties.find { it.name == fieldName }
+        GrailsDomainClass fieldDomainClass = field.referencedDomainClass;
+        def relationFieldName = attrs.relationField
+        GrailsDomainClassProperty relationField = fieldDomainClass.properties.find { it.name == relationFieldName }
+
+        if (!attrs.titleProperty)
+            attrs.titleProperty = 'name'
+
+        def selectedIds
+        if (field.oneToMany)
+            selectedIds = bean.properties[fieldName].collect {it.id}.join(',')
+        else
+            selectedIds = bean.properties[relationFieldName].id.toString()
+
+        out << "<input id=\"${fieldName}\" name=\"${fieldName}\" class=\"combotree\" ${attrs.width ? 'style=\"width:' + attrs.width + ';\"' : ''}  ${field.oneToMany ? 'multiple' : ''} "
+        out << "data-options=\"url:'${createLink(controller: "rapidGrails", action: "treeStructure", params: [domainClass: fieldDomainClass.fullName, relationProperty: relationFieldName, titleProperty: attrs.titleProperty, selected: selectedIds])}'\">"
+        out << "<script language=\"javascript\">"
+        out << "\$('#${fieldName}').combotree();"
+        out << "</script>"
+    }
+
+    def treeStructure(domainClass, relationProperty, titleProperty, selectedIds) {
+
+        def openIds = []
+        selectedIds.each { selectedId ->
+            def id = selectedId
+            def currentParentId = domainClass.clazz.createCriteria().list {
+                eq("id", id)
+            }.first()."${relationProperty.name}Id"
+            while (currentParentId) {
+                openIds << currentParentId
+                id = currentParentId
+                currentParentId = domainClass.clazz.createCriteria().list {
+                    eq("id", id)
+                }.first()."${relationProperty.name}Id"
+            }
+        }
+
+        def structure
+        if (params.id)
+            structure = fillRecordChildren([id: params.id.toLong()], domainClass, relationProperty, titleProperty, selectedIds, openIds)
+        else
+            structure = fillRecordChildren(null, domainClass, relationProperty, titleProperty, selectedIds, openIds)
+
+        return structure as grails.converters.JSON
+
+    }
+
+    def fillRecordChildren(root, domainClass, relationProperty, titleProperty, selectedIds, openIds) {
+        def recordList
+        if (root)
+            recordList = domainClass.clazz.createCriteria().list {
+                eq("${relationProperty.name}.id", root.id)
+            }.collect { [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []] }
+        else
+            recordList = domainClass.clazz.createCriteria().list {
+                isNull(relationProperty.name)
+            }.collect { [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []] }
+
+
+        recordList.each {
+            it.children = fillRecordChildren(it, domainClass, relationProperty, titleProperty, selectedIds, openIds)
+            if (it.children == [])
+                it.state = 'open'
+        }
+
+        return recordList
     }
 }
