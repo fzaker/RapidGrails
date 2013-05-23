@@ -81,7 +81,8 @@
 }
 
 .row-fluid [class*="span"] {
-    margin-right: 2.5641%;
+    /*margin-right: 2.5641%;*/
+    margin-right: 2%;
     margin-left: 0;
     float: right;
 }
@@ -108,4 +109,8 @@ label {
 
 input[type="radio"], input[type="checkbox"] {
     margin: 4px 0 0 4px;
+}
+
+ul, ol {
+    margin: 0 25px 10px 0;
 }
