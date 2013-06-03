@@ -79,7 +79,7 @@ class CommonTagLib {
 
             out << "<li>" <<
                     checkBox(name: cname, value: val, checked: isChecked) <<
-                    "${(obj.hasProperty('label') && obj.label) ? obj.label : (translate ? message(code: obj.toString()) : obj)}" <<
+                    "${((obj.hasProperty('label') || obj instanceof Map)&& obj.label) ? obj.label : (translate ? message(code: obj.toString()) : obj)}" <<
                     "</li>"
         }
         out << "</ul>"

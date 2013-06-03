@@ -35,10 +35,12 @@ class RapidGrailsController {
 
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
 
+        def hasDeleted = domainClass.hasPersistentProperty("deleted")
         params.max = max
         params.offset = offset
         params.sort = sort
         params.order = order
+
 
         def instanceList
         def records
@@ -57,6 +59,13 @@ class RapidGrailsController {
                         isNull("${tree}")
                     else
                         eq("${tree}.id", Long.parseLong(parentId))
+                }
+                if(hasDeleted){
+                    or{
+                        eq("deleted",false)
+                        isNull('deleted')
+                    }
+
                 }
                 if (params.filter) {
                     def filter = JSON.parse(params.filter)
