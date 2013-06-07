@@ -344,14 +344,17 @@ class FormTagLib {
 
         def selectedIds
         if (field.oneToMany)
-            selectedIds = bean.properties[fieldName].collect {it.id}.join(',')
+            selectedIds = bean.properties[fieldName].collect { it.id }.join(',')
         else
             selectedIds = bean.properties[relationFieldName].id.toString()
 
         out << "<input id=\"${fieldName}\" name=\"${fieldName}\" class=\"combotree\" ${attrs.width ? 'style=\"width:' + attrs.width + ';\"' : ''}  ${field.oneToMany ? 'multiple' : ''} "
         out << "data-options=\"url:'${createLink(controller: "rapidGrails", action: "treeStructure", params: [domainClass: fieldDomainClass.fullName, relationProperty: relationFieldName, titleProperty: attrs.titleProperty, selected: selectedIds])}'\">"
         out << "<script language=\"javascript\">"
-        out << "\$('#${fieldName}').combotree();"
+        if (attrs.onChange)
+            out << "\$('#${fieldName}').combotree({onChange:function(param){${attrs.onChange}(param);}});"
+        else
+            out << "\$('#${fieldName}').combotree();"
         out << "</script>"
     }
 
