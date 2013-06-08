@@ -355,6 +355,7 @@ class RapidGrailsController {
                         instance."addTo${methodName}"(compositInstance)
                     }
                     bindData(compositInstance, compositParams)
+                    compositInstance.deleted = compositParams?.deleted?.toBoolean()
                 }
             }
         }
