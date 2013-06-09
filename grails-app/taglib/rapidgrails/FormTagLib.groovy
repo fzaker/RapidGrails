@@ -351,10 +351,17 @@ class FormTagLib {
         out << "<input id=\"${fieldName}\" name=\"${fieldName}\" class=\"combotree\" ${attrs.width ? 'style=\"width:' + attrs.width + ';\"' : ''}  ${field.oneToMany ? 'multiple' : ''} "
         out << "data-options=\"url:'${createLink(controller: "rapidGrails", action: "treeStructure", params: [domainClass: fieldDomainClass.fullName, relationProperty: relationFieldName, titleProperty: attrs.titleProperty, selected: selectedIds])}'\">"
         out << "<script language=\"javascript\">"
-        if (attrs.onChange)
-            out << "\$('#${fieldName}').combotree({onChange:function(param){${attrs.onChange}(param);}});"
+        out << "\$('#${fieldName}').combotree({"
+
+        if (attrs.cascadeCheck)
+            out << "cascadeCheck:${attrs.cascadeCheck},"
         else
-            out << "\$('#${fieldName}').combotree();"
+            out << "cascadeCheck:false,"
+
+        if (attrs.onChange)
+            out << "onChange:function(param){${attrs.onChange}(param);}"
+
+        out << "});"
         out << "</script>"
     }
 
