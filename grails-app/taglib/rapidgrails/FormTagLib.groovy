@@ -359,7 +359,7 @@ class FormTagLib {
             out << "cascadeCheck:false,"
 
         if (attrs.onChange)
-            out << "onChange:function(param){${attrs.onChange}(param);}"
+            out << "onChange:function(param){${attrs.onChange}(param);},"
 
         if (attrs.onLoadSuccess)
             out << "onLoadSuccess:function(node, param){${attrs.onLoadSuccess}(node, param);}"
