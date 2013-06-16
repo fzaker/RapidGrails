@@ -40,7 +40,7 @@ function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, para
     }else{
         frm.ajaxSubmit({
             url: url,
-            type:(params && params.method)?params.method:"get",
+            type:(params && params.method)?params.method:"post",
             data: {domainClass:domainClass},
             success: function(response) {
                 if(typeof(response)=='object' && response.length>0){
