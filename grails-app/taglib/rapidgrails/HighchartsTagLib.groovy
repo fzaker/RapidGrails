@@ -65,6 +65,7 @@ class HighchartsTagLib {
                       },
                       xAxis: {
                          categories: ${xAxis as JSON}
+                         ${xAxis.size()>5?",labels:{rotation: -45,align: 'right'}":""}
                       },
                       yAxis: {
                          //min: 0,
