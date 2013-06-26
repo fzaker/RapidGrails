@@ -58,14 +58,15 @@ class HighchartsTagLib {
                          defaultSeriesType: '${attrs.type ?: "column"}'
                       },
                       title: {
-                         text: '${messageSource.getMessage("${domainClass.propertyName}.${chart.title}.chart", null, chart.title, locale)}'
+                         text: '${messageSource.getMessage("${domainClass.propertyName}.${chart.title}.chart", null, chart.title, locale)}',
+                         style:{fontFamily:'tahoma'}
                       },
                       subtitle: {
                          text: '${messageSource.getMessage("${domainClass.propertyName}.${chart.title}.chart.subtitle", null, chart.subtitle, locale)}'
                       },
                       xAxis: {
                          categories: ${xAxis as JSON}
-                         ${xAxis.size()>5?",labels:{rotation: -45,align: 'right'}":""}
+                         ${xAxis.size()>5?",labels:{rotation: -60,align: 'right',style:{fontFamily:'tahoma',fontSize:'10px'}}":""}
                       },
                       yAxis: {
                          //min: 0,
