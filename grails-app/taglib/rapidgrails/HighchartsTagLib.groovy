@@ -66,7 +66,7 @@ class HighchartsTagLib {
                       },
                       xAxis: {
                          categories: ${xAxis as JSON}
-                         ${xAxis.size()>5?",labels:{rotation: -60,align: 'right',style:{fontFamily:'tahoma',fontSize:'10px'}}":""}
+                         ${xAxis.size()>5?",labels:{rotation: -45,align: 'right',style:{fontFamily:'tahoma',fontSize:'15px'}}":""}
                       },
                       yAxis: {
                          //min: 0,
@@ -87,7 +87,7 @@ class HighchartsTagLib {
                       tooltip: {
                          formatter: function() {
                             return ''+
-                               this.x +': '+ this.y;
+                               this.x +': '+ Highcharts.numberFormat(this.y, 0, '', ',');
                          }
                       },
                       credits: {
