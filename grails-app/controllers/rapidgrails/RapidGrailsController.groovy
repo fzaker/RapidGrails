@@ -4,6 +4,7 @@ import fi.joensuu.joyds1.calendar.JalaliCalendar
 import grails.converters.JSON
 import grails.orm.HibernateCriteriaBuilder
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
+import org.codehaus.groovy.grails.web.json.JSONArray
 import rapidgrails.reporting.ReportDataReader
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.grails.datastore.gorm.mongo.MongoCriteriaBuilder
@@ -60,9 +61,9 @@ class RapidGrailsController {
                     else
                         eq("${tree}.id", Long.parseLong(parentId))
                 }
-                if(hasDeleted){
-                    or{
-                        eq("deleted",false)
+                if (hasDeleted) {
+                    or {
+                        eq("deleted", false)
                         isNull('deleted')
                     }
 
@@ -94,8 +95,7 @@ class RapidGrailsController {
                                         def assocDomainClass = grailsApplication.getDomainClass(assocClass.name)
                                         def aliasFieldProperty = assocDomainClass.getPropertyByName(aliasFieldParts[1])
                                         v = aliasFieldProperty.type.newInstance(f.val)
-                                    }
-                                    else { // The simple case, f.field is direct field of the class
+                                    } else { // The simple case, f.field is direct field of the class
                                         def property
                                         try {
                                             property = _domainClass.getPropertyByName(f.field)
@@ -106,6 +106,11 @@ class RapidGrailsController {
                                                 v = f.val as Integer
                                             else if (type == Number.class)
                                                 v = f.val as Integer
+                                            else if (type == Long)
+                                                if (f.val instanceof JSONArray)
+                                                    v = f.val.collect { it.toLong() }
+                                                else
+                                                    v = f.val
                                             else
                                                 v = property.type.newInstance(f.val)
                                         } catch (e) {
@@ -265,10 +270,9 @@ class RapidGrailsController {
             [id: it.id, cell: cell]
         }
         if (export) {
-            def colLabels = colNames.collectEntries {def res = [:]; res[it] = message(code: "${domainClass.propertyName}.${it}"); return res}
-            exportService.export("Excel", response, "export", "xls", rows.collect {it.cell}, colNames, colLabels, [:], [:])
-        }
-        else
+            def colLabels = colNames.collectEntries { def res = [:]; res[it] = message(code: "${domainClass.propertyName}.${it}"); return res }
+            exportService.export("Excel", response, "export", "xls", rows.collect { it.cell }, colNames, colLabels, [:], [:])
+        } else
             render([page: page.toString(), total: total, records: records.toString(),
                     rows: rows, userdata: userData] as JSON)
     }
@@ -277,10 +281,10 @@ class RapidGrailsController {
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
         def obj = domainClass.clazz.findById(params.id)
         def res = [:]
-        def ignored=[]
-        if(domainClass.hasProperty("ignoredFieldsInJSON"))
-            ignored=domainClass.clazz.ignoredFieldsInJSON
-        ignored<<'springSecurityService'
+        def ignored = []
+        if (domainClass.hasProperty("ignoredFieldsInJSON"))
+            ignored = domainClass.clazz.ignoredFieldsInJSON
+        ignored << 'springSecurityService'
         domainClass.properties.each {
             if (!ignored.contains(it.name)) {
                 def val = obj[it.name]
@@ -295,8 +299,7 @@ class RapidGrailsController {
                             }
                             res[it.name] << itemVal
                         }
-                    }
-                    else
+                    } else
                         res[it.name] = val
                 }
             }
@@ -333,23 +336,22 @@ class RapidGrailsController {
         def newParams = params.clone()
         if (instance.hasProperty("composites")) {
             def composites = instance.composites
-            params.findAll {p -> composites.any {p.key.startsWith(it)}}.each {
+            params.findAll { p -> composites.any { p.key.startsWith(it) } }.each {
                 newParams.remove(it.key)
             }
         }
         bindData(instance, newParams)
         if (instance.hasProperty("composites")) {
             def composites = instance.composites
-            composites.each {composit ->
-                params.findAll {it.key.startsWith(composit) && it.value instanceof Map}
-                        .each {
+            composites.each { composit ->
+                params.findAll { it.key.startsWith(composit) && it.value instanceof Map }
+                .each {
                     def methodName = composit[0].toUpperCase() + composit.substring(1);
                     def compositParams = it.value
                     def compositInstance
                     if (compositParams.id) {
-                        compositInstance = instance."${composit}".find {(compositParams.id as Long) == it.id}
-                    }
-                    else {
+                        compositInstance = instance."${composit}".find { (compositParams.id as Long) == it.id }
+                    } else {
                         compositInstance = domainClass.propertyMap[composit].referencedDomainClass.clazz.newInstance()
 
                         instance."addTo${methodName}"(compositInstance)
@@ -363,7 +365,7 @@ class RapidGrailsController {
         if (instance.save()) {
             render "1"
         } else {
-            render instance.errors.allErrors.collect {g.message(error: it)} as JSON
+            render instance.errors.allErrors.collect { g.message(error: it) } as JSON
         }
     }
 
