@@ -110,7 +110,7 @@ class RapidGrailsController {
                                                 if (f.val instanceof JSONArray)
                                                     v = f.val.collect { it.toLong() }
                                                 else
-                                                    v = f.val
+                                                    v = f.val.toLong()
                                             else
                                                 v = property.type.newInstance(f.val)
                                         } catch (e) {
