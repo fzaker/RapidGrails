@@ -129,6 +129,8 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging-api/jars/commons-logging-api-1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.activemq/activemq-core/bundles/activemq-core-5.3.0.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.atmosphere/atmosphere-runtime/jars/atmosphere-runtime-1.1.0-SNAPSHOT.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/c3p0/c3p0/jars/c3p0-0.9.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.quartz-scheduler/quartz/jars/quartz-2.1.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
