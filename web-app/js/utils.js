@@ -5,10 +5,10 @@ function capitaliseFirstLetter(string) {
 function setUrlParam(url, param_name, param_value) {
     var newAdditionalURL = "";
     var baseURL = url.substring(0,url.indexOf("?"));
-    var aditionalURL = url.substring(url.indexOf("?")+1);
+    var additionalURL = url.substring(url.indexOf("?")+1);
     var temp = "";
-    if (aditionalURL) {
-        var tempArray = aditionalURL.split("&");
+    if (additionalURL) {
+        var tempArray = additionalURL.split("&");
         for (var i in tempArray) {
             if (tempArray[i].indexOf(param_name) == -1) {
                 newAdditionalURL += temp + tempArray[i];
@@ -19,6 +19,21 @@ function setUrlParam(url, param_name, param_value) {
     var add_param = temp + param_name + "=" + param_value;
     return baseURL + "?" + newAdditionalURL + add_param;
 }
+
+function getUrlParamValue(url, param_name) {
+    var baseURL = url.substring(0,url.indexOf("?"));
+    var params = url.substring(url.indexOf("?")+1);
+    var temp = "";
+    if (params) {
+        var tempArray = params.split("&");
+        for (var i in tempArray) {
+            if (tempArray[i].indexOf(param_name + "=") != -1)
+                return tempArray[i].replace(param_name + "=", "");
+        }
+    }
+    return null;
+}
+
 function removeNulls(obj){
     if(typeof(obj)=='object'){
         var res={};
