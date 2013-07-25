@@ -205,6 +205,7 @@ class RapidGrailsController {
 
         def binding = new Binding()
         def gs = new GroovyShell(binding)
+        def autoId = 0
         def rows = instanceList.collect {
             def cell = export ? [:] : []
 
@@ -267,7 +268,7 @@ class RapidGrailsController {
 
                 cell << false //expanded
             }
-            [id: it.id, cell: cell]
+            [id: it.id?:autoId++, cell: cell]
         }
         if (export) {
             def colLabels = colNames.collectEntries { def res = [:]; res[it] = message(code: "${domainClass.propertyName}.${it}"); return res }
