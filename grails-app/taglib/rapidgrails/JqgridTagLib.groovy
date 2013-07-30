@@ -1,5 +1,6 @@
 package rapidgrails
 
+import grails.util.Environment
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import grails.converters.JSON
 
@@ -21,7 +22,7 @@ class JqgridTagLib {
         def localeTag = "<script type=\"text/javascript\" src=\"${localeURL}\"></script>"
         out << localeTag
 
-        def jsURL = g.resource(plugin: 'rapid-grails', dir: 'jqgrid/js', file: 'jquery.jqGrid.min.js')
+        def jsURL = g.resource(plugin: 'rapid-grails', dir: 'jqgrid/js', file: "jquery.jqGrid.${Environment.current == Environment.DEVELOPMENT ? "src" : "min"}.js")
         def scriptTag = "<script type=\"text/javascript\" src=\"${jsURL}\"></script>"
         out << scriptTag
 
@@ -68,7 +69,7 @@ class JqgridTagLib {
                 pgbuttons: false,     // disable page control like next, back button
                 pgtext: null,         // disable pager text like 'Page 0 of 10'
                 viewrecords: false,    // disable current view record text like 'View 1-10 of 100'
-                loadonce: true,
+                //loadonce: true,
             """
         }
         else {

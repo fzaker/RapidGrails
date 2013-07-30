@@ -205,6 +205,7 @@ class RapidGrailsController {
 
         def binding = new Binding()
         def gs = new GroovyShell(binding)
+        def autoId = 0
         def rows = instanceList.collect {
             def cell = export ? [:] : []
 
@@ -267,7 +268,7 @@ class RapidGrailsController {
 
                 cell << false //expanded
             }
-            [id: it.id, cell: cell]
+            [id: it.id?:autoId++, cell: cell]
         }
         if (export) {
             def colLabels = colNames.collectEntries { def res = [:]; res[it] = message(code: "${domainClass.propertyName}.${it}"); return res }
@@ -404,12 +405,14 @@ class RapidGrailsController {
         selectedIds.each { selectedId ->
             def id = selectedId
             def currentParentId = domainClass.clazz.createCriteria().list {
+                eq("deleted", false)
                 eq("id", id)
             }.first()."${relationProperty.name}Id"
             while (currentParentId) {
                 openIds << currentParentId
                 id = currentParentId
                 currentParentId = domainClass.clazz.createCriteria().list {
+                    eq("deleted", false)
                     eq("id", id)
                 }.first()."${relationProperty.name}Id"
             }
@@ -429,10 +432,12 @@ class RapidGrailsController {
         def recordList
         if (root)
             recordList = domainClass.clazz.createCriteria().list {
+                eq("deleted", false)
                 eq("${relationProperty.name}.id", root.id)
             }.collect { [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []] }
         else
             recordList = domainClass.clazz.createCriteria().list {
+                eq("deleted", false)
                 isNull(relationProperty.name)
             }.collect { [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []] }
 
