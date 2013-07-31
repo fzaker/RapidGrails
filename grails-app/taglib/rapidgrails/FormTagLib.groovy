@@ -17,7 +17,7 @@ class FormTagLib {
         request.setAttribute("bean", attrs.bean)
         out << "<form>"
         out << "<div class='form-validation errors' style='display:none'>${message(code: 'form-errors')}</div>"
-        out << "<div class=\"form-fields\"><div class=\"form-fields-part\">"
+        out << "<div class=\"form-fields\"><div class=\"form-fields-part ${attrs.inline?"inline":""}\">"
         out << body()
         def modify = request.getAttribute("modify")
         def template = request.getAttribute("template")

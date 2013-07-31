@@ -330,7 +330,7 @@ class JqgridTagLib {
         def commands = request.getAttribute("commands")
         def gridName = request.getAttribute("gridName")
         def domainClass = request.getAttribute("domainClass")
-        def deleteUrl = createLink(controller: "rapidGrails", action: "delete")
+        def deleteUrl = attrs.deleteURL?:createLink(controller: "rapidGrails", action: "delete")
 
         commands << [handler: "genericDelete('${deleteUrl}', '${gridName}', '${domainClass}', #id#)", icon: "cross"]
     }
