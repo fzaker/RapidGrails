@@ -294,7 +294,7 @@ class RapidGrailsController {
                         res[it.name] = []
                         val.each { item ->
                             def itemVal = [:]
-                            item.domainClass.properties.each {
+                            item?.domainClass?.properties?.each {
                                 if (item[it.name])
                                     itemVal[it.name] = item[it.name]
                             }
@@ -404,10 +404,11 @@ class RapidGrailsController {
         def openIds = []
         selectedIds.each { selectedId ->
             def id = selectedId
-            def currentParentId = domainClass.clazz.createCriteria().list {
+            def list = domainClass.clazz.createCriteria().list {
                 eq("deleted", false)
                 eq("id", id)
-            }.first()."${relationProperty.name}Id"
+            }
+            def currentParentId = list.size() > 0 ? list.first()."${relationProperty.name}Id" : null
             while (currentParentId) {
                 openIds << currentParentId
                 id = currentParentId
