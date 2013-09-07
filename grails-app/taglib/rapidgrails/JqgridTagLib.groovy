@@ -5,7 +5,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import grails.converters.JSON
 
 class JqgridTagLib {
-    def static namespace = "rg"
+    static namespace = "rg"
 
     def jqgridResources = {
         //out << g.javascript(library: 'jquery')
