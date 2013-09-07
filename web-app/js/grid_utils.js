@@ -14,11 +14,13 @@ $.fn.serializeObject = function () {
     return o;
 };
 String.prototype.hashCode = function () {
-    var hash = 0, i, char;
+    var hash = 0;
+    var i;
+    var char_;
     if (this.length == 0) return hash;
     for (i = 0; i < this.length; i++) {
-        char = this.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
+        char_= this.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char_;
         hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
@@ -26,7 +28,7 @@ String.prototype.hashCode = function () {
 
 var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallback, params) {
     if(!params)
-        params={}
+        params={};
     $.ajaxSettings.traditional = true;
     $.ajax({
         type:"GET",
@@ -34,8 +36,8 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
     }).done(function (response) {
             var r = $("#ajax-form" + remoteAddress.hashCode());
             if (!r.length)
-                r = $("<form id='ajax-form" + remoteAddress.hashCode() + "' enctype='multipart/form-data' action='" + saveAddress + "'></form>")
-            r.html("")
+                r = $("<form id='ajax-form" + remoteAddress.hashCode() + "' enctype='multipart/form-data' action='" + saveAddress + "'></form>");
+            r.html("");
 
             r.dialog({
                 modal:true,
@@ -51,13 +53,13 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
                             type:"post",
                             success:function (resp) {
                                 if(params && params.afterSave)
-                                    params.afterSave(resp)
+                                    params.afterSave(resp);
                                 if (resp == 0 || typeof resp == 'object') {
                                     if (saveCallback)
-                                        saveCallback(resp)
+                                        saveCallback(resp);
                                     var r = $("#ajax-form" + remoteAddress.hashCode());
                                     r.dialog("destroy");
-                                    r.remove()
+                                    r.remove();
                                 } else {
                                     var r = $("#ajax-form" + remoteAddress.hashCode());
                                     r.html(resp);
@@ -72,12 +74,12 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
                     }
                 },
                 close:function () {
-                    r.html("")
+                    r.html("");
                 }
             })
             if (params && params.width) {
-                r.dialog("option", "width", params.width)
-                r.dialog("option", "position", "top")
+                r.dialog("option", "width", params.width);
+                r.dialog("option", "position", "top");
             }
 
             r.append(response);
@@ -88,7 +90,7 @@ var loadOverlay = function (remoteAddress, saveAddress, saveCallback, loadCallba
 
 var genericDelete = function(remoteAddress, gridName, domainClass, id) {
     if(confirm('آیا از حذف رکورد اطمینان دارید؟')){
-        var data = {id: id, domainClass: domainClass}
+        var data = {id: id, domainClass: domainClass} ;
         $.ajax({
             type:"GET",
             url: remoteAddress,
@@ -98,7 +100,7 @@ var genericDelete = function(remoteAddress, gridName, domainClass, id) {
                     jQuery("#" + gridName).trigger("reloadGrid");
                 }
                 else{
-                    alert(response)
+                    alert(response);
                 }
         });
     }
