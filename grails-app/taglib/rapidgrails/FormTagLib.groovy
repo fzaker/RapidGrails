@@ -72,7 +72,7 @@ class FormTagLib {
         out << "</div></div>"
         out << "</form>"
         def angular = TaglibHelper.getBooleanAttribute(attrs, "angular", true)
-        if (angular)
+        if (angular){
             out << """
                 <script type="text/javascript">
                     function getFresh${domainClass.propertyName}Instance() {
@@ -123,6 +123,7 @@ class FormTagLib {
                     }
                 </script>
             """
+        }
 
         request.removeAttribute("interceptCreateDialog")
         request.removeAttribute("modify")
