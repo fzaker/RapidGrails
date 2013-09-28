@@ -50,7 +50,7 @@ function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, para
     //load jquery.form.js from rapidgrails/web-app/js/
 
     var frm = jQuery("#" + formContainerId + ">form");
-    if(frm.find('.ng-invalid').length>0){
+    if(frm.find('.ng-invalid:visible').length>0){
         frm.find('.form-validation').show()
     }else{
         frm.ajaxSubmit({

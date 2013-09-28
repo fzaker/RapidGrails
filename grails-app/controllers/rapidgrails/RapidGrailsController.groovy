@@ -230,10 +230,15 @@ class RapidGrailsController {
                 } else {
                     def v = it[col]
                     if (v instanceof Date) {
-                        def cal = Calendar.getInstance()
-                        cal.setTime(v)
-                        def jc = new JalaliCalendar(cal)
-                        v = String.format("%04d/%02d/%02d", jc.getYear(), jc.getMonth(), jc.getDay())
+                        if(domainClass.constraints[col]?.metaConstraints?.persian){
+                            def cal = Calendar.getInstance()
+                            cal.setTime(v)
+                            def jc = new JalaliCalendar(cal)
+                            v = String.format("%04d/%02d/%02d", jc.getYear(), jc.getMonth(), jc.getDay())
+                        }
+                        else{
+
+                        }
                     } else if (v instanceof String) {
                         def code1 = "${domainClass.propertyName}.${col}.${v}"
                         def code2 = "${col}.${v}"
