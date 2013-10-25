@@ -23,13 +23,19 @@ class CriteriaTagLib {
                 r = r[0..-2]
             if (r)
                 r = "[${r}]"
-            r = r.replace("\r", "").replace("\n","")
+            r = r.replace("\r", "").replace("\n", "")
             gridParams.filter = r
         }
     }
 
     def eq = { attrs, body ->
         searchBox(attrs, "eq")
+    }
+    def eqProp = { attrs, body ->
+        searchBox(attrs, "eqProperty")
+    }
+    def neProp = { attrs, body ->
+        searchBox(attrs, "neProperty")
     }
 
     def inCrit = { attrs, body ->
@@ -66,11 +72,11 @@ class CriteriaTagLib {
         attrs.unary = "true"
         searchBox(attrs, "isNull")
     }
-    def alias = {attrs, body ->
+    def alias = { attrs, body ->
         attrs.hidden = "true"
         searchBox(attrs, "createAlias")
     }
-    def nest = {attrs, body ->
+    def nest = { attrs, body ->
         closureOperator(attrs, body, attrs.name)
     }
 
@@ -82,7 +88,7 @@ class CriteriaTagLib {
         closureOperator(attrs, body, "or")
     }
 
-    def filterGrid = {attrs, body ->
+    def filterGrid = { attrs, body ->
         def group = request.getAttribute("group")
         def labelMsg = attrs.label ?: "Search"
         def label = g.message(code: labelMsg, default: labelMsg)
@@ -90,7 +96,7 @@ class CriteriaTagLib {
         out << "<input type='button' onclick='loadGrid(\"${group}\", \"${attrs.grid}\")' value='${label}'>"
         out << "</input>"
     }
-    def exportGrid = {attrs, body ->
+    def exportGrid = { attrs, body ->
         def group = request.getAttribute("group")
         def labelMsg = attrs.label ?: "Export"
         def label = g.message(code: labelMsg, default: labelMsg)
@@ -130,18 +136,16 @@ class CriteriaTagLib {
             def idPrefix = attrs.idPrefix
             def datePicker = attrs.datePicker
             def valueMessagePrefix = attrs.valueMessagePrefix
-            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker,idPrefix:idPrefix,valueMessagePrefix:valueMessagePrefix])
+            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker, idPrefix: idPrefix, valueMessagePrefix: valueMessagePrefix])
         } else {
-            if (attrs.value){
-                if(attrs.value instanceof String)
-                    out << "{op:'${operator}', field:'${attrs.name}', val:'${attrs.value}'},"
+            if (attrs.value) {
+                if (attrs.value instanceof String)
+                    out << "{op:'${operator}', field:'${attrs.name}', val:'${attrs.value}'${attrs.thirdParam ? ", thirdParam:${attrs.thirdParam}" : ''}},"
                 else
-                    out << "{op:'${operator}', field:'${attrs.name}', val:${attrs.value}},"
-            }
-            else if (attrs.unary){
+                    out << "{op:'${operator}', field:'${attrs.name}', val:${attrs.value}${attrs.thirdParam ? ", thirdParam:${attrs.thirdParam}" : ''}},"
+            } else if (attrs.unary) {
                 out << "{op:'${operator}', field:'${attrs.name}'},"
-            }
-            else
+            } else
                 out << ""
         }
     }

@@ -48,7 +48,9 @@ class PopupTagLib {
         out << """
             <script type='text/javascript'>
             jQuery(function() {
-                jQuery("#${id}").dialog({autoOpen: false, dialogClass: "form-dialog"});
+                setTimeout(function(){
+                    jQuery("#${id}").dialog({autoOpen: false, dialogClass: "form-dialog"});
+                },50);
             });
             </script>
         """
@@ -57,7 +59,7 @@ class PopupTagLib {
     def cancelButton = { attrs, body ->
         def cancelLabel = message(code: "cancel.label", default: "Cancel")
         def dialogId = request.getAttribute("dialogId")
-        out << "<input type='button' value='${cancelLabel}' onclick='jQuery(\"#${dialogId}\").dialog(\"close\")'/>"
+        out << "<input class='btn' type='button' value='${cancelLabel}' onclick='jQuery(\"#${dialogId}\").dialog(\"close\")'/>"
     }
 
     def saveButton = { attrs, body ->
@@ -67,6 +69,6 @@ class PopupTagLib {
         def gridId = attrs.gridId ?: domainClass.propertyName
         def url = g.createLink(controller: attrs.conroller?:"rapidGrails", action: attrs.action?:"save")
         def params=attrs.params?:[:]
-        out << "<input type='button' value='${saveLabel}' ng-click='save${domainClass.propertyName.capitalize()}(\"${dialogId}\", \"${gridId}\", \"${url}\", \"${domainClass.fullName}\",${params as JSON})'/>"
+        out << "<input class='btn btn-success' type='button' value='${saveLabel}' ng-click='save${domainClass.propertyName.capitalize()}(\"${dialogId}\", \"${gridId}\", \"${url}\", \"${domainClass.fullName}\",${params as JSON})'/>"
     }
 }

@@ -1,6 +1,7 @@
 package rapidgrails;
 
 import fi.joensuu.joyds1.calendar.JalaliCalendar;
+
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
@@ -14,7 +15,7 @@ import java.util.GregorianCalendar;
  * 2/6/11 - 11:41 PM
  */
 
-public class JalaliDateFormat extends DateFormat{
+public class JalaliDateFormat extends DateFormat {
     @Override
     public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
         GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
@@ -26,8 +27,15 @@ public class JalaliDateFormat extends DateFormat{
         return toAppendTo;
     }
 
+    public Date parse(String source, ParsePosition parsePosition) {
+        return null;
+    }
+
     @Override
-    public Date parse(String source, ParsePosition pos) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Date parse(String source) {
+        String[] dates = source.split("/");
+        JalaliCalendar jc = new JalaliCalendar();
+        jc.set(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2]));
+        return jc.toJavaUtilGregorianCalendar().getTime();
     }
 }

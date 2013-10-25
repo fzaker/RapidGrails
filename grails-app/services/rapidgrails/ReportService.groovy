@@ -14,7 +14,7 @@ import ar.com.fdvs.dj.output.ReportWriterFactory
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter
 import net.sf.jasperreports.engine.JRDataSource
 import net.sf.jasperreports.engine.JasperPrint
-import net.sf.jasperreports.engine.data.ListOfArrayDataSource
+//import net.sf.jasperreports.engine.data.ListOfArrayDataSource
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource
 
 class ReportService {

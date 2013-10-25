@@ -114,3 +114,30 @@ input[type="radio"], input[type="checkbox"] {
 ul, ol {
     margin: 0 25px 10px 0;
 }
+.btn{
+    line-height: 18px;
+}
+.modal{
+    right:50%;
+    margin-left: 0px;
+    margin-right: -365px;
+    width: 730px;
+}
+.modal.fade.in{
+    margin-top: 0px;
+}
+.close{
+    float: left;
+}
+select.ui-pg-selbox, input.ui-pg-input{
+    width: auto;
+}
+.alert{
+    text-align: right;
+}
+.table td{
+    text-align: right;
+}
+input[type="file"]{
+    max-width: 180px;
+}

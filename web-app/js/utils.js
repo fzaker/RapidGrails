@@ -39,11 +39,11 @@ function removeNulls(obj){
         var res={};
         for(var key in obj){
             if(obj[key])
-                res[key]=removeNulls(obj[key])
+                res[key]=removeNulls(obj[key]);
         }
         return res
     }
-    return obj
+    return obj;
 }
 function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, params) {
 
@@ -51,7 +51,7 @@ function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, para
 
     var frm = jQuery("#" + formContainerId + ">form");
     if(frm.find('.ng-invalid:visible').length>0){
-        frm.find('.form-validation').show()
+        frm.find('.form-validation').show();
     }else{
         frm.ajaxSubmit({
             url: url,
@@ -59,15 +59,15 @@ function sendSaveRequest(formContainerId, gridItToReload, url, domainClass, para
             data: {domainClass:domainClass},
             success: function(response) {
                 if(typeof(response)=='object' && response.length>0){
-                    var validation = frm.find('.form-validation')
-                    validation.html('')
+                    var validation = frm.find('.form-validation');
+                    validation.html('');
                     $(response).each(function(){
-                        validation.append('<div>'+this+'</div>')
+                        validation.append('<div>'+this+'</div>');
                     })
-                    validation.show()
+                    validation.show();
                 }else{
                     jQuery("#" + capitaliseFirstLetter(gridItToReload) + "Grid").trigger('reloadGrid');
-                    jQuery("#" + formContainerId).dialog("close")
+                    jQuery("#" + formContainerId).dialog("close");
                     if(params && params.saveCallback){
                         eval(params.saveCallback+"(response)");
                     }
