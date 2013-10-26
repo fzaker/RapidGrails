@@ -5,6 +5,7 @@ import grails.converters.JSON
 import grails.orm.HibernateCriteriaBuilder
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.web.json.JSONArray
+import org.hibernate.collection.PersistentMap
 import rapidgrails.reporting.ReportDataReader
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 
@@ -295,15 +296,14 @@ class RapidGrailsController {
 //                        } else {
 //
 //                        }
-                    } else if (v instanceof String) {
+                    } else if (v instanceof String || v instanceof Boolean) {
                         def code1 = "${domainClass.propertyName}.${col}.${v}"
                         def code2 = "${col}.${v}"
-                        v = message(code: code1, default: message(code: code2, default: v))
+                        v = message(code: code1, default: message(code: code2, default: v as String))
                     } else if ((v instanceof Double) || (v instanceof Float)) {
                         v = String.format("%.2f", v)
                     } else if (v == null)
                         v = ""
-
                     if (export)
                         cell[col] = v?.toString()
                     else
@@ -345,7 +345,7 @@ class RapidGrailsController {
         def obj = domainClass.clazz.findById(params.id)
         if (obj)
             domainClass = grailsApplication.getDomainClass(obj.class.name)
-        def res = [domainClassType:domainClass.fullName]
+        def res = [domainClassType: domainClass.fullName]
         def ignored = []
         if (domainClass.hasProperty("ignoredFieldsInJSON"))
             ignored = domainClass.clazz.ignoredFieldsInJSON
@@ -358,9 +358,13 @@ class RapidGrailsController {
                         res[it.name] = []
                         val.each { item ->
                             def itemVal = [:]
-                            item?.domainClass?.properties?.each {
-                                if (item[it.name])
-                                    itemVal[it.name] = item[it.name]
+                            if (val instanceof PersistentMap) {
+                                itemVal[item.key] = item.value
+                            } else {
+                                item?.domainClass?.properties?.each {
+                                    if (item[it.name])
+                                        itemVal[it.name] = item[it.name]
+                                }
                             }
                             res[it.name] << itemVal
                         }
@@ -392,10 +396,10 @@ class RapidGrailsController {
 
     def save = {
         DefaultGrailsDomainClass domainClass
-        if(params.domainClassType)
-            domainClass=grailsApplication.getDomainClass(params.domainClassType)
+        if (params.domainClassType)
+            domainClass = grailsApplication.getDomainClass(params.domainClassType)
         else
-            domainClass=grailsApplication.getDomainClass(params.domainClass)
+            domainClass = grailsApplication.getDomainClass(params.domainClass)
         def instance
         if (params.id)
             instance = domainClass.clazz.findById(params.id)
