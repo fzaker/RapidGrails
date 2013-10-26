@@ -73,7 +73,7 @@ class FormTagLib {
                 out << g.select(name: 'domainClassType',
                         from: domainClass.subClasses,
                         optionKey: 'fullName',
-                        optionValue: 'fullName',
+                        optionValue: {obj->message(code:"${obj.fullName}")},
                         required: true,
                         "ng-model": "${domainClass.propertyName}Instance.domainClassType",
                         noSelection: ["": ''])
