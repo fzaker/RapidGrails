@@ -289,6 +289,8 @@ class JqgridTagLib {
             if (it.handler) {
                 def handler = it.handler.replaceAll("#id#", "\" + cellvalue + \"")
                 out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:${handler}\\"><img src=\\"${fam.icon(name: it.icon)}\\" title=\\"${iconTitle}\\"/></a>";"""
+            } else if (it.html) {
+                out << """r = r + "${it.html}";"""
             } else if (it.loadOverlay) {
                 def remoteAddress = "'" + it.loadOverlay.replaceAll("#id#", "\" + cellvalue + \"") + "'"
                 def loadCallback = it.loadCallback ? "," + it.loadCallback : ""
@@ -366,6 +368,9 @@ class JqgridTagLib {
             resp.action = attrs.action
         if (attrs.param)
             resp.param = attrs.param
+        if (attrs.html)
+            resp.html = attrs.html
+
         def commands = request.getAttribute("commands")
         commands << resp
     }
