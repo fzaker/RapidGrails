@@ -93,7 +93,7 @@ class CriteriaTagLib {
         def labelMsg = attrs.label ?: "Search"
         def label = g.message(code: labelMsg, default: labelMsg)
         out << g.javascript(src: 'criteria.js', plugin: 'rapid-grails')
-        out << "<input type='button' onclick='loadGrid(\"${group}\", \"${attrs.grid}\")' value='${label}'>"
+        out << "<input class='btn btn-primary' type='button' onclick='loadGrid(\"${group}\", \"${attrs.grid}\")' value='${label}'>"
         out << "</input>"
     }
     def exportGrid = { attrs, body ->
@@ -136,7 +136,7 @@ class CriteriaTagLib {
             def idPrefix = attrs.idPrefix
             def datePicker = attrs.datePicker
             def valueMessagePrefix = attrs.valueMessagePrefix
-            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker, idPrefix: idPrefix, valueMessagePrefix: valueMessagePrefix])
+            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker, idPrefix: idPrefix, valueMessagePrefix: valueMessagePrefix, thirdParam: attrs.thirdParam,unary:attrs.unary])
         } else {
             if (attrs.value) {
                 if (attrs.value instanceof String)
