@@ -33,9 +33,13 @@ public class JalaliDateFormat extends DateFormat {
 
     @Override
     public Date parse(String source) {
-        String[] dates = source.split("/");
-        JalaliCalendar jc = new JalaliCalendar();
-        jc.set(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2]));
-        return jc.toJavaUtilGregorianCalendar().getTime();
+        try {
+            String[] dates = source.split("/");
+            JalaliCalendar jc = new JalaliCalendar();
+            jc.set(Integer.parseInt(dates[0]), Integer.parseInt(dates[1]), Integer.parseInt(dates[2]));
+            return jc.toJavaUtilGregorianCalendar().getTime();
+        } catch (Exception x) {
+            return null;
+        }
     }
 }
