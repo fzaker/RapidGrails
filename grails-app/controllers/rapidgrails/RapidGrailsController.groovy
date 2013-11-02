@@ -5,14 +5,50 @@ import grails.converters.JSON
 import grails.orm.HibernateCriteriaBuilder
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.web.json.JSONArray
+import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.hibernate.collection.PersistentMap
+import org.hibernate.criterion.DetachedCriteria
+import org.hibernate.criterion.Subqueries
 import rapidgrails.reporting.ReportDataReader
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 
 class RapidGrailsController {
     def exportService
 
+    def addCriteriaMethods() {
+        HibernateCriteriaBuilder.metaClass.static.getHibernateDetachedCriteria = {
+            QueryableCriteria queryableCriteria, String alias = null ->
+
+                DetachedCriteria detachedCriteria
+                if (alias) {
+                    detachedCriteria = DetachedCriteria.forClass(
+                            queryableCriteria.getPersistentEntity().getJavaClass(), alias);
+                } else {
+                    detachedCriteria = DetachedCriteria.forClass(
+                            queryableCriteria.getPersistentEntity().getJavaClass());
+                }
+                populateHibernateDetachedCriteria(detachedCriteria, queryableCriteria);
+                return detachedCriteria;
+        }
+
+        HibernateCriteriaBuilder.metaClass.exists = {
+            grails.gorm.DetachedCriteria gormDetachedCriteria, String joinAlias ->
+
+                addToCriteria(Subqueries.exists(
+                        HibernateCriteriaBuilder.getHibernateDetachedCriteria(gormDetachedCriteria, joinAlias)
+                ))
+        }
+        HibernateCriteriaBuilder.metaClass.notExists = {
+            grails.gorm.DetachedCriteria gormDetachedCriteria, String joinAlias ->
+
+                addToCriteria(Subqueries.notExists(
+                        HibernateCriteriaBuilder.getHibernateDetachedCriteria(gormDetachedCriteria, joinAlias)
+                ))
+        }
+    }
+
     def jsonList = {
+        addCriteriaMethods()
         def export = params.export
 
         def max = Math.min(params.rows ? params.int('rows') : 10, 100)
@@ -79,13 +115,31 @@ class RapidGrailsController {
 
 
                             _filter.each { f ->
-                                if (!f.field && f.op && f.data) {
+
+                                if (f.op == 'exists') {
+                                    def cdclass = grailsApplication.getDomainClass(f.field)
+                                    Closure<?> innerClosure = getFindingCriteria(f.data, cdclass, aliases)
+
+                                    exists(new grails.gorm.DetachedCriteria(cdclass.clazz).build {
+                                        projections {
+                                            property 'id'
+                                        }
+                                        eqProperty "${f.val}.${f.thirdParam}", 'this.id'
+//                                        eq('valueStr', '1')
+//                                        eq('type.id', 2L)
+                                        innerClosure.setResolveStrategy(Closure.DELEGATE_ONLY)
+                                        innerClosure.setDelegate(delegate)
+                                        innerClosure.call()
+                                    }, f.val)
+
+                                } else if (!f.field && f.op && f.data) {
                                     "${f.op}" {
                                         Closure<?> innerClosure = getFindingCriteria(f.data, _domainClass, aliases)
                                         innerClosure.setResolveStrategy(Closure.DELEGATE_ONLY)
                                         innerClosure.setDelegate(delegate)
                                         innerClosure.call()
                                     }
+
                                 } else {
 
                                     def aliasFieldParts = f.field.split(/\./)

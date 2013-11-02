@@ -184,3 +184,7 @@ ul.inline li{
     height: 22px !important;
 }
 /* END jqgrid bootstrap */
+
+.highcharts-container{
+    direction: ltr;
+}

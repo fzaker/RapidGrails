@@ -44,7 +44,9 @@ var getCriteria = function (eleman) {
     }
     return result;
 }
-
+function isNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
 var getCriteriaRecursive = function (eleman) {
     var criteria;
 
@@ -61,9 +63,13 @@ var getCriteriaRecursive = function (eleman) {
     if (op) {
         criteria = {};
         criteria.op = op;
-        if (thirdparam)
+        if (thirdparam && isNumber(thirdparam))
             criteria.thirdParam = parseInt(thirdparam)
+        else
+            criteria.thirdParam = thirdparam
         var v = $(eleman).val();
+        if(!v)
+            v = $(eleman).attr('value');
 
         if (v == 'date.struct') {
             var name = $(eleman).attr("id")
@@ -84,6 +90,8 @@ var getCriteriaRecursive = function (eleman) {
         if (v && f) {
             criteria.val = v;
             criteria.field = f;
+            if(childCriteriaList.length > 0)
+                criteria.data = childCriteriaList;
         }
         else if(f && unary) {
             criteria.field = f;
