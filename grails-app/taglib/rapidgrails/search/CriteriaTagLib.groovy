@@ -108,7 +108,7 @@ class CriteriaTagLib {
     private void closureOperator(attrs, body, operator) {
         def gridParams = request.getAttribute("gridParams")
         if (gridParams == null) {
-            out << "<span op='${operator}'>"
+            out << "<span id='${attrs.id}' op='${operator}'>"
             out << body()
             out << "</span>"
         } else {
