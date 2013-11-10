@@ -50,6 +50,12 @@ class CriteriaTagLib {
     def lt = { attrs, body ->
         searchBox(attrs, "lt")
     }
+    def ge = { attrs, body ->
+        searchBox(attrs, "ge")
+    }
+    def le = { attrs, body ->
+        searchBox(attrs, "le")
+    }
 
     def like = { attrs, body ->
         searchBox(attrs, "like")
@@ -90,7 +96,7 @@ class CriteriaTagLib {
 
     def filterGrid = { attrs, body ->
         def group = request.getAttribute("group")
-        def labelMsg = attrs.label ?: "Search"
+        def labelMsg = attrs.label ?: message(code:'search',default: "Search")
         def label = g.message(code: labelMsg, default: labelMsg)
         out << g.javascript(src: 'criteria.js', plugin: 'rapid-grails')
         out << "<input class='btn btn-primary' type='button' onclick='loadGrid(\"${group}\", \"${attrs.grid}\")' value='${label}'>"
@@ -136,7 +142,7 @@ class CriteriaTagLib {
             def idPrefix = attrs.idPrefix
             def datePicker = attrs.datePicker
             def valueMessagePrefix = attrs.valueMessagePrefix
-            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker, idPrefix: idPrefix, valueMessagePrefix: valueMessagePrefix, thirdParam: attrs.thirdParam,unary:attrs.unary])
+            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker, idPrefix: idPrefix, valueMessagePrefix: valueMessagePrefix, thirdParam: attrs.thirdParam?:'',unary:attrs.unary])
         } else {
             if (attrs.value) {
                 if (attrs.value instanceof String)

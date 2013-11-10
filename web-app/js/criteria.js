@@ -65,7 +65,7 @@ var getCriteriaRecursive = function (eleman) {
         criteria.op = op;
         if (thirdparam && isNumber(thirdparam))
             criteria.thirdParam = parseInt(thirdparam)
-        else
+        else if(thirdparam)
             criteria.thirdParam = thirdparam
         var v = $(eleman).val();
         if(!v)
