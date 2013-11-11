@@ -5,14 +5,50 @@ import grails.converters.JSON
 import grails.orm.HibernateCriteriaBuilder
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.web.json.JSONArray
+import org.grails.datastore.mapping.query.api.QueryableCriteria
+import org.hibernate.collection.PersistentMap
+import org.hibernate.criterion.DetachedCriteria
+import org.hibernate.criterion.Subqueries
 import rapidgrails.reporting.ReportDataReader
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.grails.datastore.gorm.mongo.MongoCriteriaBuilder
 
 class RapidGrailsController {
     def exportService
 
+    def addCriteriaMethods() {
+        HibernateCriteriaBuilder.metaClass.static.getHibernateDetachedCriteria = {
+            QueryableCriteria queryableCriteria, String alias = null ->
+
+                DetachedCriteria detachedCriteria
+                if (alias) {
+                    detachedCriteria = DetachedCriteria.forClass(
+                            queryableCriteria.getPersistentEntity().getJavaClass(), alias);
+                } else {
+                    detachedCriteria = DetachedCriteria.forClass(
+                            queryableCriteria.getPersistentEntity().getJavaClass());
+                }
+                populateHibernateDetachedCriteria(detachedCriteria, queryableCriteria);
+                return detachedCriteria;
+        }
+
+        HibernateCriteriaBuilder.metaClass.exists = {
+            grails.gorm.DetachedCriteria gormDetachedCriteria, String joinAlias ->
+
+                addToCriteria(Subqueries.exists(
+                        HibernateCriteriaBuilder.getHibernateDetachedCriteria(gormDetachedCriteria, joinAlias)
+                ))
+        }
+        HibernateCriteriaBuilder.metaClass.notExists = {
+            grails.gorm.DetachedCriteria gormDetachedCriteria, String joinAlias ->
+
+                addToCriteria(Subqueries.notExists(
+                        HibernateCriteriaBuilder.getHibernateDetachedCriteria(gormDetachedCriteria, joinAlias)
+                ))
+        }
+    }
+
     def jsonList = {
+        addCriteriaMethods()
         def export = params.export
 
         def max = Math.min(params.rows ? params.int('rows') : 10, 100)
@@ -35,6 +71,7 @@ class RapidGrailsController {
         }
 
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
+        def allAliases = [:]
 
         def hasDeleted = domainClass.hasPersistentProperty("deleted")
         params.max = max
@@ -71,55 +108,126 @@ class RapidGrailsController {
                 if (params.filter) {
                     def filter = JSON.parse(params.filter)
 
-                    def findingCriteria = { _filter, DefaultGrailsDomainClass _domainClass ->
+
+                    def findingCriteria = { _filter, DefaultGrailsDomainClass _domainClass, aliases ->
+
                         def closure = {
-                            def aliases = [:]
+
+
                             _filter.each { f ->
-                                if (!f.field && f.op && f.data) {
+
+                                if (f.op == 'exists') {
+                                    def cdclass = grailsApplication.getDomainClass(f.field)
+                                    Closure<?> innerClosure = getFindingCriteria(f.data, cdclass, aliases)
+
+                                    exists(new grails.gorm.DetachedCriteria(cdclass.clazz).build {
+                                        projections {
+                                            property 'id'
+                                        }
+                                        eqProperty "${f.val}.${f.thirdParam}", 'this.id'
+//                                        eq('valueStr', '1')
+//                                        eq('type.id', 2L)
+                                        innerClosure.setResolveStrategy(Closure.DELEGATE_ONLY)
+                                        innerClosure.setDelegate(delegate)
+                                        innerClosure.call()
+                                    }, f.val)
+
+                                } else if (!f.field && f.op && f.data) {
                                     "${f.op}" {
-                                        Closure<?> innerClosure = getFindingCriteria(f.data, _domainClass)
+                                        Closure<?> innerClosure = getFindingCriteria(f.data, _domainClass, aliases)
                                         innerClosure.setResolveStrategy(Closure.DELEGATE_ONLY)
                                         innerClosure.setDelegate(delegate)
                                         innerClosure.call()
                                     }
+
                                 } else {
+
                                     def aliasFieldParts = f.field.split(/\./)
                                     def beforeDot = aliasFieldParts[0]
                                     def v
-                                    if (f.op == "createAlias") {
-                                        aliases.put(f.val, f.field)
-                                        v = f.val
-                                    } else if (aliases.keySet().contains(beforeDot)) {
-                                        def assocProperty = aliases[beforeDot]
-                                        def assocClass = _domainClass.associationMap[assocProperty]
-                                        def assocDomainClass = grailsApplication.getDomainClass(assocClass.name)
-                                        def aliasFieldProperty = assocDomainClass.getPropertyByName(aliasFieldParts[1])
-                                        v = aliasFieldProperty.type.newInstance(f.val)
-                                    } else { // The simple case, f.field is direct field of the class
-                                        def property
+                                    def assignVal = { val, property ->
+
                                         try {
-                                            property = _domainClass.getPropertyByName(f.field)
+
                                             def type = property.type
                                             if (type.toString().equals("boolean"))
-                                                v = f.val as Boolean
+                                                v = val as Boolean
                                             else if (type.toString().equals("int"))
-                                                v = f.val as Integer
+                                                v = val as Integer
                                             else if (type == Number.class)
-                                                v = f.val as Integer
+                                                v = val as Integer
+                                            else if (type == byte[].class)
+                                                v = (val as String).bytes
+                                            else if (type == String.class)
+                                                v = val as String
                                             else if (type == Long)
-                                                if (f.val instanceof JSONArray)
-                                                    v = f.val.collect { it.toLong() }
-                                                else
-                                                    v = f.val.toLong()
+                                                if (val instanceof JSONArray)
+                                                    v = val.collect { it.toLong() }
+                                                else {
+                                                    v = val as Long
+                                                }
                                             else
-                                                v = property.type.newInstance(f.val)
+                                                v = property.type.newInstance(val)
                                         } catch (e) {
-                                            v = f.val
+                                            e.printStackTrace()
+                                            v = val
                                         }
+                                    }
+                                    def getProperty = { tmpDomainClass, assocProperty ->
+                                        def res
+                                        if (tmpDomainClass.hasProperty(assocProperty))
+                                            res = tmpDomainClass.getPropertyByName(assocProperty)
+                                        else {
+                                            tmpDomainClass.subClasses.each {
+                                                if (it.hasProperty(assocProperty))
+                                                    res = it.getPropertyByName(assocProperty)
+                                            }
+                                        }
+                                        return res
+                                    }
+                                    def assignSingle = { val ->
+                                        if (f.op == "createAlias") {
+                                            aliases.put(f.val, f.field)
+                                            v = val
+
+                                        } else if (aliases.keySet().contains(beforeDot)) {
+                                            def stack = new Stack<String>()
+                                            def tmpBD = beforeDot
+                                            stack.push(aliasFieldParts[1])
+                                            while (tmpBD && aliases.containsKey(tmpBD)) {
+                                                if (aliases.get(tmpBD).contains('.')) {
+                                                    def aliasFieldParts_ = aliases.get(tmpBD).split(/\./)
+                                                    stack.push(aliasFieldParts_[1])
+                                                    tmpBD = aliasFieldParts_[0]
+                                                } else {
+                                                    stack.push(aliases.get(tmpBD))
+                                                    tmpBD = ''
+                                                }
+                                            }
+                                            def tmpDomainClass = _domainClass
+                                            while (stack.size() > 1) {
+                                                def assocProperty = stack.pop()
+                                                def assocClass = getProperty(tmpDomainClass, assocProperty).referencedPropertyType
+                                                tmpDomainClass = grailsApplication.getDomainClass(assocClass.name)
+                                            }
+                                            def aliasFieldProperty = getProperty(tmpDomainClass, stack.pop())
+                                            v = assignVal(val, aliasFieldProperty)
+                                        } else { // The simple case, f.field is direct field of the class
+                                            def property = _domainClass.getPropertyByName(f.field)
+                                            assignVal(val, property)
 
 //                                        v = f.val.asType(property.type)
+                                        }
                                     }
-                                    if (f.val)
+                                    if (f.op == 'in') {
+                                        v = f.val.collect { assignSingle(it) }
+                                    } else if (f.op == 'eqProperty') {
+                                        v = f.val
+                                    } else
+                                        v = assignSingle(f.val)
+                                    if (f.thirdParam)
+                                        "${f.op}"(f.field, v, f.thirdParam)
+                                    else if (f.val)
                                         "${f.op}"(f.field, v)
                                     else
                                         "${f.op}"(f.field)
@@ -129,8 +237,12 @@ class RapidGrailsController {
                         return closure
                     }
                     HibernateCriteriaBuilder.metaClass.getFindingCriteria = findingCriteria
-                    MongoCriteriaBuilder.metaClass.getFindingCriteria = findingCriteria
-                    Closure<?> c = delegate.getFindingCriteria(filter, domainClass)
+                    try {
+                        org.grails.datastore.gorm.mongo.MongoCriteriaBuilder.metaClass.getFindingCriteria = findingCriteria
+                    } catch (x) {
+
+                    }
+                    Closure<?> c = delegate.getFindingCriteria(filter, domainClass, allAliases)
                     c.setResolveStrategy(Closure.DELEGATE_ONLY)
                     c.setDelegate(delegate)
                     c.call()
@@ -230,19 +342,22 @@ class RapidGrailsController {
                 } else {
                     def v = it[col]
                     if (v instanceof Date) {
+//                        if (domainClass.constraints[col]?.metaConstraints?.persian) {
                         def cal = Calendar.getInstance()
                         cal.setTime(v)
                         def jc = new JalaliCalendar(cal)
                         v = String.format("%04d/%02d/%02d", jc.getYear(), jc.getMonth(), jc.getDay())
-                    } else if (v instanceof String) {
+//                        } else {
+//
+//                        }
+                    } else if (v instanceof String || v instanceof Boolean) {
                         def code1 = "${domainClass.propertyName}.${col}.${v}"
                         def code2 = "${col}.${v}"
-                        v = message(code: code1, default: message(code: code2, default: v))
+                        v = message(code: code1, default: message(code: code2, default: v as String))
                     } else if ((v instanceof Double) || (v instanceof Float)) {
                         v = String.format("%.2f", v)
                     } else if (v == null)
                         v = ""
-
                     if (export)
                         cell[col] = v?.toString()
                     else
@@ -269,7 +384,7 @@ class RapidGrailsController {
 
                 cell << false //expanded
             }
-            [id: it.id?:autoId++, cell: cell]
+            [id: it.id ?: autoId++, cell: cell]
         }
         if (export) {
             def colLabels = colNames.collectEntries { def res = [:]; res[it] = message(code: "${domainClass.propertyName}.${it}"); return res }
@@ -282,7 +397,9 @@ class RapidGrailsController {
     def jsonInstance = {
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
         def obj = domainClass.clazz.findById(params.id)
-        def res = [:]
+        if (obj)
+            domainClass = grailsApplication.getDomainClass(obj.class.name)
+        def res = [domainClassType: domainClass.fullName]
         def ignored = []
         if (domainClass.hasProperty("ignoredFieldsInJSON"))
             ignored = domainClass.clazz.ignoredFieldsInJSON
@@ -295,9 +412,13 @@ class RapidGrailsController {
                         res[it.name] = []
                         val.each { item ->
                             def itemVal = [:]
-                            item?.domainClass?.properties?.each {
-                                if (item[it.name])
-                                    itemVal[it.name] = item[it.name]
+                            if (val instanceof PersistentMap) {
+                                itemVal[item.key] = item.value
+                            } else {
+                                item?.domainClass?.properties?.each {
+                                    if (item[it.name])
+                                        itemVal[it.name] = item[it.name]
+                                }
                             }
                             res[it.name] << itemVal
                         }
@@ -328,7 +449,11 @@ class RapidGrailsController {
     }
 
     def save = {
-        DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
+        DefaultGrailsDomainClass domainClass
+        if (params.domainClassType)
+            domainClass = grailsApplication.getDomainClass(params.domainClassType)
+        else
+            domainClass = grailsApplication.getDomainClass(params.domainClass)
         def instance
         if (params.id)
             instance = domainClass.clazz.findById(params.id)
@@ -347,7 +472,7 @@ class RapidGrailsController {
             def composites = instance.composites
             composites.each { composit ->
                 params.findAll { it.key.startsWith(composit) && it.value instanceof Map }
-                .each {
+                        .each {
                     def methodName = composit[0].toUpperCase() + composit.substring(1);
                     def compositParams = it.value
                     def compositInstance
@@ -375,7 +500,13 @@ class RapidGrailsController {
         try {
             DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
             def instance = domainClass.clazz.findById(params.id)
-            instance.delete(flush: true)
+            def hasDeleted = domainClass.hasPersistentProperty("deleted")
+            if (hasDeleted) {
+                instance.deleted = true
+                instance.save()
+            } else {
+                instance.delete(flush: true)
+            }
             render "1"
         } catch (e) {
             render message(code: 'default.not.deleted.message')
@@ -452,4 +583,5 @@ class RapidGrailsController {
 
         return recordList
     }
+
 }

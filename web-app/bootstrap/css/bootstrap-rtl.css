@@ -114,3 +114,45 @@ input[type="radio"], input[type="checkbox"] {
 ul, ol {
     margin: 0 25px 10px 0;
 }
+.btn{
+    line-height: 18px;
+}
+.modal{
+    right:50%;
+    margin-left: 0px;
+    margin-right: -365px;
+    width: 730px;
+}
+.modal.fade.in{
+    margin-top: 0px;
+}
+.close{
+    float: left;
+}
+select.ui-pg-selbox, input.ui-pg-input{
+    width: auto;
+}
+.alert{
+    text-align: right;
+}
+.table td{
+    text-align: right;
+}
+input[type="file"]{
+    max-width: 180px;
+}
+
+.fieldcontain select{
+    margin-bottom: 9px;
+}
+.input-append input, .input-prepend input, .input-append select, .input-prepend select, .input-append .uneditable-input, .input-prepend .uneditable-input{
+    border-radius: 3px 0 0 3px;
+}
+
+.input-prepend.input-append .add-on:first-child, .input-prepend.input-append .btn:first-child{
+    border-radius: 0px 3px 3px 0px;
+}
+
+.input-prepend.input-append .add-on:last-child, .input-prepend.input-append .btn:last-child {
+    border-radius: 3px 0 0 3px;
+}

@@ -10,7 +10,11 @@ class CompositeHelper {
         composites.each { composite ->
             def _toBeRemoved = instance."${composite}".findAll {it?.deleted || !it}
             if (_toBeRemoved) {
-                instance."${composite}".removeAll(_toBeRemoved)
+                _toBeRemoved.each{
+                    instance."removeFrom${composite.capitalize()}"(it)
+                    it.delete()
+                }
+
             }
             def parentPropertyName
             instance."${composite}".eachWithIndex() { o, i ->

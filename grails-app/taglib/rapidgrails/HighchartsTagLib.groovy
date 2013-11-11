@@ -195,6 +195,7 @@ class HighchartsTagLib {
                                         return  this.point.name? Math.round(this.percentage*100)/100 +' %':'';
                                     }
                                 }
+                                ${attrs.showLegend?',showInLegend: true':''}
                             }
                         },
                         series: [{

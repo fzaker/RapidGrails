@@ -17,7 +17,7 @@ class FormTagLib {
         request.setAttribute("bean", attrs.bean)
         out << "<form>"
         out << "<div class='form-validation errors' style='display:none'>${message(code: 'form-errors')}</div>"
-        out << "<div class=\"form-fields\"><div class=\"form-fields-part ${attrs.inline?"inline":""}\">"
+        out << "<div class=\"form-fields\"><div class=\"form-fields-part ${attrs.inline ? "inline" : ""}\">"
         out << body()
         def modify = request.getAttribute("modify")
         def template = request.getAttribute("template")
@@ -25,31 +25,31 @@ class FormTagLib {
 //        out << g.hiddenField(name: "id", value: "0", "ng-model": "${domainClass.propertyName}Instance.id")
             def count = 0
             def newColumn = false
-            props.each { p ->
+            def renderProp = { p ->
                 if (!modify.ignoredFields?.contains(p.name)) {
                     if (composites?.contains(p.name))
                         out << compositeRows(bean: attrs.bean, property: p.name, className: p.domainClass.propertyName)
                     else if (modify.hiddenReferences?.contains(p.name))
-                        out << g.hiddenField(name: "${p.name}.id", "value": "{{${domainClass.propertyName}Instance.${p.name}.id}}")
+                        out << g.hiddenField(name: "${p.name}.id", "value": "{{${p.domainClass.propertyName}Instance.${p.name}.id}}")
                     else {
                         if (newColumn) {
                             out << "</div><div class=\"form-fields-part\">"
                             newColumn = false
                         }
-                        def c = domainClass.constraints[p.name]
+                        def c = p.domainClass.constraints[p.name]
 
                         if (modify.readonlyFields?.contains(p.name)) {
-                            out << f.field(bean: attrs.bean, property: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
+                            out << f.field(bean: p.domainClass.newInstance(), property: p.name, "input-ng-model": "${p.domainClass.propertyName}Instance.${p.name}", "input-readonly": "true")
                         } else if (p.type == Date.class && c?.metaConstraints?.persian) {
-                            out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${domainClass.propertyName}.${p.name}.label")}</label>"""
-                            out << rg.datePicker(name: p.name, "input-ng-model": "${domainClass.propertyName}Instance.${p.name}")
+                            out << """<div class="fieldcontain"><label for="${p.name}">${message(code: "${p.domainClass.propertyName}.${p.name}.label")}</label>"""
+                            out << rg.datePicker(name: p.name, "input-ng-model": "${p.domainClass.propertyName}Instance.${p.name}")
                             out << "</div>"
                         } else {
                             def ngModel = "${domainClass.propertyName}Instance.${p.name}"
                             if (p.manyToOne || p.manyToMany || p.oneToOne)
                                 ngModel += ".id"
-                            def nullable = c.appliedConstraints.find { it.name == 'nullable' }.nullable
-                            def fparams = [bean: attrs.bean, property: p.name, "input-ng-model": ngModel, "input-ngmodel": ngModel, required: !nullable]
+                            def nullable = (p.type == Boolean.class || p.type == boolean || p.type == byte[].class) ? true : (c.appliedConstraints.find { it.name == 'nullable' }.nullable)
+                            def fparams = [bean: p.domainClass.newInstance(), property: p.name, "input-ng-model": ngModel, "input-ngmodel": ngModel, required: !nullable]
                             if (!p.manyToOne)
                                 fparams."input-valueMessagePrefix" = "${p.domainClass.propertyName}.${p.name}"
 
@@ -63,6 +63,45 @@ class FormTagLib {
                         newColumn = true
                     }
                 }
+
+            }
+            props.each {
+                renderProp(it)
+            }
+            if (domainClass.hasSubClasses()) {
+                out << "<div class='fieldcontain required'><label for='domainClass'><span class='required-indicator'>*</span>${message(code: 'domainClass')}</label>"
+                out << g.select(name: 'domainClassType',
+                        from: domainClass.subClasses,
+                        optionKey: 'fullName',
+                        optionValue: {obj->message(code:"${obj.fullName}")},
+                        required: true,
+                        "ng-model": "${domainClass.propertyName}Instance.domainClassType",
+                        noSelection: ["": ''])
+                out << '</div>'
+                domainClass.subClasses.each {
+                    out << "<div id='${it.fullName}' class='domainClassTypes' style='display:none;'>"
+                    def subProps = TaglibHelper.getDomainClassProperties(it)
+                    subProps.each {
+                        if (!props.contains(it))
+                            renderProp(it)
+                    }
+                    out << '</div>'
+                }
+                out << """
+<script type="text/javascript">
+    jQuery(function(){
+        \$('#domainClassType').change(function(){
+            \$('.domainClassTypes').hide();
+            \$('#'+\$('#domainClassType').val().replace('.','\\\\\\.')).show()
+        })
+        jQuery("#${domainClass.propertyName}").on('dialogopen',function(){
+            setTimeout(function(){
+            \$('#domainClassType').change()
+            },100);
+        });
+    })
+</script>
+"""
             }
             modify.extraFields.each {
                 out << it
@@ -72,7 +111,7 @@ class FormTagLib {
         out << "</div></div>"
         out << "</form>"
         def angular = TaglibHelper.getBooleanAttribute(attrs, "angular", true)
-        if (angular)
+        if (angular) {
             out << """
                 <script type="text/javascript">
                     function getFresh${domainClass.propertyName}Instance() {
@@ -87,16 +126,22 @@ class FormTagLib {
                             ${request.getAttribute("interceptCreateDialog")}
                             if (!\$scope.\$\$phase)
                                 \$scope.\$apply();
-
+                            jQuery("#${domainClass.propertyName} #domainClassType").removeAttr('disabled');
                             jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code: 'form-errors')}');
                             jQuery("#${domainClass.propertyName}").dialog('open');
                         }
 
-                        \$scope.open${domainClass.propertyName.capitalize()}EditDialog = function() {
-                            var selectedRow = jQuery('#${domainClass.shortName}Grid').jqGrid('getGridParam','selrow'); // returns id of selected object
+                        \$scope.open${domainClass.propertyName.capitalize()}EditDialog = function(id) {
+                            var selectedRow
+                            if(id)
+                                selectedRow = id;
+                            else
+                                selectedRow = jQuery('#${domainClass.shortName}Grid').jqGrid('getGridParam','selrow'); // returns id of selected object
                             var url = "${g.createLink(plugin: "rapid-grails", controller: "rapidGrails", action: "jsonInstance")}/" + selectedRow + "?domainClass=${domainClass.fullName}";
                             \$http.get(url).success(function(data, status, headers, config) {
+
                                 \$scope.${domainClass.propertyName}Instance = removeNulls(data);
+                                jQuery("#${domainClass.propertyName} #domainClassType").attr('disabled','disabled');
                                 jQuery("#${domainClass.propertyName}").find('.form-validation').hide().html('${message(code: 'form-errors')}');
                                 jQuery("#${domainClass.propertyName}").dialog('open');
                             });
@@ -108,21 +153,22 @@ class FormTagLib {
                             sendSaveRequest(dialogId, gridId, url, domainClass, params);
                         }
                 """
-        props.each { p ->
-            if (composites?.contains(p.name)) {
-                out << """
+            props.each { p ->
+                if (composites?.contains(p.name)) {
+                    out << """
                     \$scope.addComposite${p.name}= function() {
                         if(!\$scope.${domainClass.propertyName}Instance.${p.name})
                             \$scope.${domainClass.propertyName}Instance.${p.name}=[]
                         \$scope.${domainClass.propertyName}Instance.${p.name}[\$scope.${domainClass.propertyName}Instance.${p.name}.length]={}
                     }
                 """
+                }
             }
-        }
-        out << """
+            out << """
                     }
                 </script>
             """
+        }
 
         request.removeAttribute("interceptCreateDialog")
         request.removeAttribute("modify")
@@ -414,5 +460,13 @@ class FormTagLib {
         }
 
         return recordList
+    }
+
+    def submitToRemote = { attrs, body ->
+//        out<<"""<input class='btn btn-success' type='button' value='${attrs.value}' onclick='\$(this).parents('form:first').ajaxSubmit()'>"""
+        def update=''
+        if(attrs.update)
+            update='$(\'#'+attrs.update+'\').html(res);';
+        out << withTag(name: 'input', attrs: [type: 'button', class: 'btn btn-success', value: attrs.value, onclick: '$(this).parents(\'form:first\').ajaxSubmit({success:function(res,e){'+update+'}})']) { body() }
     }
 }

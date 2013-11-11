@@ -79,80 +79,16 @@
       <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
     </content>
-    <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
+    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="FundManagement-grailsPlugins" exported="" />
     <orderEntry type="module" module-name="eshop-grailsPlugins" />
     <orderEntry type="module" module-name="RapidGrails-grailsPlugins" />
-    <orderEntry type="module" module-name="KhavarmianeRegistering-grailsPlugins" />
     <orderEntry type="module" module-name="Cargo-grailsPlugins" />
     <orderEntry type="module" module-name="EShop-grailsPlugins" />
     <orderEntry type="library" scope="PROVIDED" name="commons-math-1.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
+    <orderEntry type="module" module-name="CargoSpr-grailsPlugins" />
+    <orderEntry type="module" module-name="KhavarmianeRegistering-grailsPlugins" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
@@ -163,47 +99,11 @@
       <library name="Grails User Library (RapidGrails)">
         <CLASSES>
           <root url="file://$MODULE_DIR$/lib" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.activation/activation/jars/activation-1.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.atmosphere/atmosphere-runtime/jars/atmosphere-runtime-1.1.0-SNAPSHOT.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-mongo/jars/grails-datastore-gorm-mongo-1.0.0.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-plugin-support/jars/grails-datastore-gorm-plugin-support-1.0.7.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-web/jars/grails-datastore-web-1.0.7.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.data/spring-data-commons-core/jars/spring-data-commons-core-1.2.0.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.data/spring-data-mongodb/jars/spring-data-mongodb-1.0.0.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-mongo/jars/grails-datastore-mongo-1.0.0.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-net/commons-net/jars/commons-net-2.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.geronimo.specs/geronimo-j2ee-management_1.0_spec/jars/geronimo-j2ee-management_1.0_spec-1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.activemq.protobuf/activemq-protobuf/maven-plugins/activemq-protobuf-1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.activemq/kahadb/bundles/kahadb-5.3.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.geronimo.specs/geronimo-jms_1.1_spec/jars/geronimo-jms_1.1_spec-1.1.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging-api/jars/commons-logging-api-1.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.activemq/activemq-core/bundles/activemq-core-5.3.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.mongodb/mongo-java-driver/jars/mongo-java-driver-2.9.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-web/jars/spring-security-web-3.0.7.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-core/jars/spring-security-core-3.0.7.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/c3p0/c3p0/jars/c3p0-0.9.1.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.quartz-scheduler/quartz/jars/quartz-2.1.5.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.liquibase/liquibase-core/jars/liquibase-core-2.0.5.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.scribe/scribe/jars/scribe-1.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.gmongo/gmongo/jars/gmongo-1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/mysql/mysql-connector-java/jars/mysql-connector-java-5.1.25.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.gmock/gmock/jars/gmock-0.8.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jodd/jodd/jars/jodd-3.3.4.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jodd/jodd-wot/jars/jodd-wot-3.3.4.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-test/jars/grails-datastore-gorm-test-1.0.7.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-codec/commons-codec/jars/commons-codec-1.4.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.codehaus.groovy.modules.http-builder/http-builder/jars/http-builder-0.5.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/xerces/xercesImpl/jars/xercesImpl-2.8.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sourceforge.nekohtml/nekohtml/jars/nekohtml-1.9.9.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.ezmorph/ezmorph/jars/ezmorph-1.0.6.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.json-lib/json-lib/jars/json-lib-2.3-jdk15.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.0.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.itextpdf/itextpdf/jars/itextpdf-5.4.2.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/xerces/xercesImpl/jars/xercesImpl-2.9.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/bouncycastle/bcprov-jdk14/jars/bcprov-jdk14-136.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/bouncycastle/bcmail-jdk14/jars/bcmail-jdk14-136.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.lowagie/itext/jars/itext-2.1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
