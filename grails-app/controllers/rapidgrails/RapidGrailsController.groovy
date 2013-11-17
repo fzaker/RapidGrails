@@ -212,11 +212,16 @@ class RapidGrailsController {
                                             }
                                             def aliasFieldProperty = getProperty(tmpDomainClass, stack.pop())
                                             v = assignVal(val, aliasFieldProperty)
-                                        } else { // The simple case, f.field is direct field of the class
+                                        } else if(_domainClass.hasPersistentProperty(f.field)) { // The simple case, f.field is direct field of the class
                                             def property = _domainClass.getPropertyByName(f.field)
                                             assignVal(val, property)
 
 //                                        v = f.val.asType(property.type)
+                                        }else{
+                                            if(f?.field?.endsWith("id"))
+                                                val as Long
+                                            else
+                                                val as String
                                         }
                                     }
                                     if (f.op == 'in') {
