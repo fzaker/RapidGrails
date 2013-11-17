@@ -288,7 +288,7 @@ class RapidGrailsController {
 //                }
 //            }
 
-            instanceList = domainClass.clazz.createCriteria().list(query)
+            instanceList = domainClass.clazz.createCriteria().list(query).unique()
             list = false
             records = domainClass.clazz.createCriteria().count(query)
         }
