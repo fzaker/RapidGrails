@@ -98,6 +98,18 @@ class HighchartsTagLib {
                             pointPadding: 0.2,
                             borderWidth: 0
                          }
+                         ${attrs.click?"""
+                            ,series: {
+                                cursor: 'pointer',
+                                point: {
+                                    events: {
+                                        click: function() {
+                                            ${attrs.click}(this.category, this.y);
+                                        }
+                                    }
+                                }
+                            }
+                        """:''}
                       },
                       series: ${series as JSON}
                    });
