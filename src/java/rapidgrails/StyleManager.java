@@ -18,9 +18,9 @@ public class StyleManager {
         Font headerFont = new Font(12, "Tahoma","/fonts/TAHOMA.TTF", Font.PDF_ENCODING_Identity_H_Unicode_with_horizontal_writing, true);
 
         Style headerStyle = new Style();
-        headerStyle.setBorderTop(Border.PEN_1_POINT());
-        headerStyle.setBorderLeft(Border.PEN_1_POINT());
-        headerStyle.setBorderRight(Border.PEN_1_POINT());
+//        headerStyle.setBorderTop(Border.PEN_1_POINT());
+//        headerStyle.setBorderLeft(Border.PEN_1_POINT());
+//        headerStyle.setBorderRight(Border.PEN_1_POINT());
         Color headerBackColor = new Color(75, 172, 198);
         headerStyle.setBackgroundColor(headerBackColor);
         headerStyle.setBorderColor(headerBackColor);
@@ -61,7 +61,7 @@ public class StyleManager {
         Font column_font = new Font(10, "Tahoma","/fonts/TAHOMA.TTF", Font.PDF_ENCODING_Identity_H_Unicode_with_horizontal_writing, true);
         Style columnStyle = new StyleBuilder(false)
                 .setFont(column_font)
-                .setBorderBottom(Border.PEN_1_POINT()).setBorderTop(Border.PEN_1_POINT()).setBorderLeft(Border.PEN_1_POINT()).setBorderRight(Border.PEN_1_POINT())
+//                .setBorderBottom(Border.PEN_1_POINT()).setBorderTop(Border.PEN_1_POINT()).setBorderLeft(Border.PEN_1_POINT()).setBorderRight(Border.PEN_1_POINT())
                 .setBorderColor(new Color(75, 172, 198))
                 .setHorizontalAlign(HorizontalAlign.RIGHT)
                 .setPaddingRight(10)
@@ -72,7 +72,7 @@ public class StyleManager {
 
     public static Style getOddRowStyle() {
         Style oddRowStyle = new Style();
-        oddRowStyle.setBorder(Border.NO_BORDER());
+//        oddRowStyle.setBorder(Border.NO_BORDER());
         Color veryLightGrey = new Color(0xF7, 0xF7, 0xF7);
         oddRowStyle.setBackgroundColor(veryLightGrey);
         oddRowStyle.setTransparency(Transparency.OPAQUE);
