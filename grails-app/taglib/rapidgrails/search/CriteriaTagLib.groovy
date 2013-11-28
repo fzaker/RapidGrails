@@ -34,6 +34,12 @@ class CriteriaTagLib {
     def eqProp = { attrs, body ->
         searchBox(attrs, "eqProperty")
     }
+    def gtProp = { attrs, body ->
+        searchBox(attrs, "gtProperty")
+    }
+    def ltProp = { attrs, body ->
+        searchBox(attrs, "ltProperty")
+    }
     def neProp = { attrs, body ->
         searchBox(attrs, "neProperty")
     }

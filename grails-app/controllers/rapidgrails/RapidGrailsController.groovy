@@ -212,13 +212,13 @@ class RapidGrailsController {
                                             }
                                             def aliasFieldProperty = getProperty(tmpDomainClass, stack.pop())
                                             v = assignVal(val, aliasFieldProperty)
-                                        } else if(_domainClass.hasPersistentProperty(f.field)) { // The simple case, f.field is direct field of the class
+                                        } else if (_domainClass.hasPersistentProperty(f.field)) { // The simple case, f.field is direct field of the class
                                             def property = _domainClass.getPropertyByName(f.field)
                                             assignVal(val, property)
 
 //                                        v = f.val.asType(property.type)
-                                        }else{
-                                            if(f?.field?.endsWith("id"))
+                                        } else {
+                                            if (f?.field?.endsWith("id"))
                                                 val as Long
                                             else
                                                 val as String
@@ -337,7 +337,10 @@ class RapidGrailsController {
                     binding.setVariable("obj", it)
                     binding.setVariable("g", g)
                     binding.setVariable("rg", rg)
-                    def v = gs.evaluate("${expressions[col]}")
+                    def v
+                    try {
+                        v = gs.evaluate("${expressions[col]}")
+                    } catch (x) { x.printStackTrace() }
                     if ((v instanceof Double) || (v instanceof Float))
                         v = String.format("%.2f", v)
                     if (export)
