@@ -119,7 +119,6 @@ class RapidGrailsController {
                                 if (f.op == 'exists') {
                                     def cdclass = grailsApplication.getDomainClass(f.field)
                                     Closure<?> innerClosure = getFindingCriteria(f.data, cdclass, aliases)
-
                                     exists(new grails.gorm.DetachedCriteria(cdclass.clazz).build {
                                         projections {
                                             property 'id'
