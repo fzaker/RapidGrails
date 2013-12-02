@@ -133,7 +133,7 @@ class CriteriaTagLib {
                 data = data[0..-2]
             if (!data)
                 out << ""
-            out << "{op:${operator}${attrs.name?" ,field:'${attrs.name}'":''}${attrs.value?" ,val:'${attrs.value}'":''}${attrs.thirdParam?" ,thirdParam:'${attrs.thirdParam}'":''},data:[${data}]},"
+            out << "{op:${operator}${attrs.name && attrs.name!=operator?" ,field:'${attrs.name}'":''}${attrs.value?" ,val:'${attrs.value}'":''}${attrs.thirdParam?" ,thirdParam:'${attrs.thirdParam}'":''},data:[${data}]},"
         }
     }
 
