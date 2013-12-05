@@ -145,31 +145,33 @@ class RapidGrailsController {
                                     def beforeDot = aliasFieldParts[0]
                                     def v
                                     def assignVal = { val, property ->
-
-                                        try {
-
-                                            def type = property.type
-                                            if (type.toString().equals("boolean"))
-                                                v = val as Boolean
-                                            else if (type.toString().equals("int"))
-                                                v = val as Integer
-                                            else if (type == Number.class)
-                                                v = val as Integer
-                                            else if (type == byte[].class)
-                                                v = (val as String).bytes
-                                            else if (type == String.class)
-                                                v = val as String
-                                            else if (type == Long)
-                                                if (val instanceof JSONArray)
-                                                    v = val.collect { it.toLong() }
-                                                else {
-                                                    v = val as Long
-                                                }
-                                            else
-                                                v = property.type.newInstance(val)
-                                        } catch (e) {
-                                            e.printStackTrace()
-                                            v = val
+                                        if(f.op in ['eqProperty','ltProperty','gtProperty'])
+                                            v=val
+                                        else{
+                                            try {
+                                                def type = property.type
+                                                if (type.toString().equals("boolean"))
+                                                    v = val as Boolean
+                                                else if (type.toString().equals("int"))
+                                                    v = val as Integer
+                                                else if (type == Number.class)
+                                                    v = val as Integer
+                                                else if (type == byte[].class)
+                                                    v = (val as String).bytes
+                                                else if (type == String.class)
+                                                    v = val as String
+                                                else if (type == Long)
+                                                    if (val instanceof JSONArray)
+                                                        v = val.collect { it.toLong() }
+                                                    else {
+                                                        v = val as Long
+                                                    }
+                                                else
+                                                    v = property.type.newInstance(val)
+                                            } catch (e) {
+                                                e.printStackTrace()
+                                                v = val
+                                            }
                                         }
                                     }
                                     def getProperty = { tmpDomainClass, assocProperty ->
