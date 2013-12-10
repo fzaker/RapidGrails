@@ -34,6 +34,12 @@ class CriteriaTagLib {
     def eqProp = { attrs, body ->
         searchBox(attrs, "eqProperty")
     }
+    def gtProp = { attrs, body ->
+        searchBox(attrs, "gtProperty")
+    }
+    def ltProp = { attrs, body ->
+        searchBox(attrs, "ltProperty")
+    }
     def neProp = { attrs, body ->
         searchBox(attrs, "neProperty")
     }
@@ -85,6 +91,10 @@ class CriteriaTagLib {
     def nest = { attrs, body ->
         closureOperator(attrs, body, attrs.name)
     }
+    def exists = { attrs, body ->
+        attrs.hidden = "true"
+        closureOperator(attrs, body, 'exists')
+    }
 
     def and = { attrs, body ->
         closureOperator(attrs, body, "and")
@@ -114,7 +124,7 @@ class CriteriaTagLib {
     private void closureOperator(attrs, body, operator) {
         def gridParams = request.getAttribute("gridParams")
         if (gridParams == null) {
-            out << "<span id='${attrs.id}' op='${operator}'>"
+            out << "<span id='${attrs.id}' op='${operator}'${attrs.name?" name='${attrs.name}'":''}${attrs.value?" value='${attrs.value}'":''}${attrs.thirdParam?" thirdParam='${attrs.thirdParam}'":''}>"
             out << body()
             out << "</span>"
         } else {
@@ -123,7 +133,7 @@ class CriteriaTagLib {
                 data = data[0..-2]
             if (!data)
                 out << ""
-            out << "{op:${operator},data:[${data}]},"
+            out << "{op:${operator}${attrs.name && attrs.name!=operator?" ,field:'${attrs.name}'":''}${attrs.value?" ,val:'${attrs.value}'":''}${attrs.thirdParam?" ,thirdParam:'${attrs.thirdParam}'":''},data:[${data}]},"
         }
     }
 

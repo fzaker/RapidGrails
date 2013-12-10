@@ -28,7 +28,7 @@ class FormTagLib {
             def renderProp = { p ->
                 if (!modify.ignoredFields?.contains(p.name)) {
                     if (composites?.contains(p.name))
-                        out << compositeRows(bean: attrs.bean, property: p.name, className: p.domainClass.propertyName)
+                        out << compositeRows(bean: p.domainClass.newInstance(), property: p.name, className: domainClass.propertyName)
                     else if (modify.hiddenReferences?.contains(p.name))
                         out << g.hiddenField(name: "${p.name}.id", "value": "{{${p.domainClass.propertyName}Instance.${p.name}.id}}")
                     else {
@@ -81,6 +81,7 @@ class FormTagLib {
                 domainClass.subClasses.each {
                     out << "<div id='${it.fullName}' class='domainClassTypes' style='display:none;'>"
                     def subProps = TaglibHelper.getDomainClassProperties(it)
+                    composites = it.hasProperty("composites") ? it.clazz.composites : null
                     subProps.each {
                         if (!props.contains(it))
                             renderProp(it)
@@ -162,6 +163,24 @@ class FormTagLib {
                         \$scope.${domainClass.propertyName}Instance.${p.name}[\$scope.${domainClass.propertyName}Instance.${p.name}.length]={}
                     }
                 """
+                }
+            }
+            domainClass.subClasses.each {
+                def subProps = TaglibHelper.getDomainClassProperties(it)
+                composites = it.hasProperty("composites") ? it.clazz.composites : null
+                subProps.each {
+                    if (!props.contains(it)) {
+                        if (composites?.contains(it.name)) {
+                            out << """
+                                \$scope.addComposite${it.name}= function() {
+                                    if(!\$scope.${domainClass.propertyName}Instance.${it.name})
+                                        \$scope.${domainClass.propertyName}Instance.${it.name}=[]
+                                    \$scope.${domainClass.propertyName}Instance.${it.name}[\$scope.${domainClass.propertyName}Instance.${it.name}.length]={}
+                                }
+                            """
+                        }
+                    }
+
                 }
             }
             out << """
@@ -467,6 +486,6 @@ class FormTagLib {
         def update=''
         if(attrs.update)
             update='$(\'#'+attrs.update+'\').html(res);';
-        out << withTag(name: 'input', attrs: [type: 'button', class: 'btn btn-success', value: attrs.value, onclick: '$(this).parents(\'form:first\').ajaxSubmit({success:function(res,e){'+update+'}})']) { body() }
+        out << withTag(name: 'input', attrs: [type: 'button', class: 'btn btn-success', value: attrs.value, onclick: '$(this).attr(\'disabled\',\'true\');$(this).parents(\'form:first\').ajaxSubmit({success:function(res,e){'+update+'}})']) { body() }
     }
 }

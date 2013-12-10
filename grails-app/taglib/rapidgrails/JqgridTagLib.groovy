@@ -266,7 +266,9 @@ class JqgridTagLib {
                 altclass: "altrow",
                 caption: "${caption}"
             });
-            jQuery("#${gridName}").jqGrid('navGrid', '#${domainClass.shortName}${attrs.idPostfix ?: ""}Pager', {edit:false,add:false,del:false,search:false});
+            \$(function(){
+                jQuery("#${gridName}").jqGrid('navGrid', '#${domainClass.shortName}${attrs.idPostfix ?: ""}Pager', {edit:false,add:false,del:false,search:false});
+            });
 
 
         </script>
