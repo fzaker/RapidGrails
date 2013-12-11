@@ -304,7 +304,7 @@ class JqgridTagLib {
                 out << """r = r + "<a style='margin-right:3px;' href=\\"javascript:${handler}\\"><img src=\\"${fam.icon(name: it.icon)}\\"  title=\\"${iconTitle}\\"/></a>";"""
             } else {
                 def param = it.param.replaceAll("#id#", "\" + cellvalue + \"")
-                out << """r = r + "<a style='margin-right:3px;' href=\\"${g.createLink(controller: it.controller, action: it.action) + "?" + param}\\"><img src=\\"${fam.icon(name: it.icon)}\\" title=\\"${iconTitle}\\" /></a>";"""
+                out << """r = r + "<a class='grid-command' style='margin-right:3px;' href=\\"${g.createLink(controller: it.controller, action: it.action) + "?" + param}\\"><img src=\\"${fam.icon(name: it.icon)}\\" title=\\"${iconTitle}\\" /></a>";"""
             }
         }
 
