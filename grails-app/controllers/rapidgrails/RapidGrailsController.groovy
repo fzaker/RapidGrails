@@ -145,9 +145,9 @@ class RapidGrailsController {
                                     def beforeDot = aliasFieldParts[0]
                                     def v
                                     def assignVal = { val, property ->
-                                        if(f.op in ['eqProperty','ltProperty','gtProperty'])
-                                            v=val
-                                        else{
+                                        if (f.op in ['eqProperty', 'ltProperty', 'gtProperty'])
+                                            v = val
+                                        else {
                                             try {
                                                 def type = property.type
                                                 if (type.toString().equals("boolean"))
@@ -351,11 +351,15 @@ class RapidGrailsController {
                 } else {
                     def v = it[col]
                     if (v instanceof Date) {
-//                        if (domainClass.constraints[col]?.metaConstraints?.persian) {
+
                         def cal = Calendar.getInstance()
                         cal.setTime(v)
                         def jc = new JalaliCalendar(cal)
-                        v = String.format("%04d/%02d/%02d", jc.getYear(), jc.getMonth(), jc.getDay())
+                        if (domainClass.constraints[col]?.metaConstraints?.withTime) {
+                            v = String.format("%04d/%02d/%02d %02d:%02d", jc.getYear(), jc.getMonth(), jc.getDay(), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE))
+                        } else {
+                            v = String.format("%04d/%02d/%02d", jc.getYear(), jc.getMonth(), jc.getDay())
+                        }
 //                        } else {
 //
 //                        }

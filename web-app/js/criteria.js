@@ -72,7 +72,7 @@ var getCriteriaRecursive = function (eleman) {
             v = $(eleman).attr('value');
 
         if (v == 'date.struct') {
-            var name = $(eleman).attr("id")
+            var name = $(eleman).attr("id").replace(/\./g,'\\.')
             var year = $("#" + name + "_year").val()
             var month = $("#" + name + "_month").val()
             var day = $("#" + name + "_day").val()
