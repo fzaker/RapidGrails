@@ -160,12 +160,16 @@ class RapidGrailsController {
                                                     v = (val as String).bytes
                                                 else if (type == String.class)
                                                     v = val as String
-                                                else if (type == Long)
+                                                else if (type == Long){
                                                     if (val instanceof JSONArray)
                                                         v = val.collect { it.toLong() }
                                                     else {
                                                         v = val as Long
                                                     }
+                                                }
+                                                else if(f.op in ['lt','le'] && type==Date){
+                                                    v=property.type.newInstance(val+' 23:59:59')
+                                                }
                                                 else
                                                     v = property.type.newInstance(val)
                                             } catch (e) {
