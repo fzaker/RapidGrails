@@ -319,11 +319,11 @@ class JqgridTagLib {
         attrs.toolbarCommands?.each {
             out << """
             <script type=\"text/javascript\">
-                jQuery("#${gridName}").jqGrid('navButtonAdd', '#${domainClass.shortName}${attrs.idPostfix ?: ""}Pager', {
+                jQuery(document).ready(function(){jQuery("#${gridName}").jqGrid('navButtonAdd', '#${domainClass.shortName}${attrs.idPostfix ?: ""}Pager', {
                     caption:"${it.caption}",
                     buttonicon:"ui-icon-${it.icon ?: it.caption}",
                     onClickButton:function(){${it.function}();}
-                });
+                });});
             </script>
             """;
         }
