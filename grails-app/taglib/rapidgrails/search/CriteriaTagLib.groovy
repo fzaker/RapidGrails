@@ -106,7 +106,7 @@ class CriteriaTagLib {
 
     def filterGrid = { attrs, body ->
         def group = request.getAttribute("group")
-        def labelMsg = attrs.label ?: message(code:'search',default: "Search")
+        def labelMsg = attrs.label ?: message(code: 'search', default: "Search")
         def label = g.message(code: labelMsg, default: labelMsg)
         out << g.javascript(src: 'criteria.js', plugin: 'rapid-grails')
         out << "<input class='btn btn-primary' type='button' onclick='loadGrid(\"${group}\", \"${attrs.grid}\")' value='${label}'>"
@@ -124,7 +124,7 @@ class CriteriaTagLib {
     private void closureOperator(attrs, body, operator) {
         def gridParams = request.getAttribute("gridParams")
         if (gridParams == null) {
-            out << "<span id='${attrs.id}' op='${operator}'${attrs.name?" name='${attrs.name}'":''}${attrs.value?" value='${attrs.value}'":''}${attrs.thirdParam?" thirdParam='${attrs.thirdParam}'":''}>"
+            out << "<span id='${attrs.id?:''}' unary='true' op='${operator}'${attrs.name&& attrs.name != operator  ? " name='${attrs.name}'" : ''}${attrs.value ? " value='${attrs.value}'" : ''}${attrs.thirdParam ? " thirdParam='${attrs.thirdParam}'" : ''}>"
             out << body()
             out << "</span>"
         } else {
@@ -133,7 +133,7 @@ class CriteriaTagLib {
                 data = data[0..-2]
             if (!data)
                 out << ""
-            out << "{op:${operator}${attrs.name && attrs.name!=operator?" ,field:'${attrs.name}'":''}${attrs.value?" ,val:'${attrs.value}'":''}${attrs.thirdParam?" ,thirdParam:'${attrs.thirdParam}'":''},data:[${data}]},"
+            out << "{op:${operator}${attrs.name && attrs.name != operator ? " ,field:'${attrs.name}'" : ''}${attrs.value ? " ,val:'${attrs.value}'" : ''}${attrs.thirdParam ? " ,thirdParam:'${attrs.thirdParam}'" : ''},data:[${data}]},"
         }
     }
 
@@ -152,7 +152,7 @@ class CriteriaTagLib {
             def idPrefix = attrs.idPrefix
             def datePicker = attrs.datePicker
             def valueMessagePrefix = attrs.valueMessagePrefix
-            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker, idPrefix: idPrefix, valueMessagePrefix: valueMessagePrefix, thirdParam: attrs.thirdParam?:'',unary:attrs.unary])
+            out << render(plugin: "rapid-grails", template: "/criteria/searchTextBox", model: [name: name, label: label, group: group, operator: operator, hidden: hidden, value: value, from: from, optionKey: optionKey, noSelection: noSelection, datePicker: datePicker, idPrefix: idPrefix, valueMessagePrefix: valueMessagePrefix, thirdParam: attrs.thirdParam ?: '', unary: attrs.unary])
         } else {
             if (attrs.value) {
                 if (attrs.value instanceof String)
