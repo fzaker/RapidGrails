@@ -74,6 +74,11 @@ class CriteriaTagLib {
         attrs.unary = "true"
         searchBox(attrs, "isNotEmpty")
     }
+    def isNotNull = { attrs, body ->
+        attrs.hidden = "true"
+        attrs.unary = "true"
+        searchBox(attrs, "isNotNull")
+    }
     def isEmpty = { attrs, body ->
         attrs.hidden = "true"
         attrs.unary = "true"
