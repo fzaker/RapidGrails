@@ -14,6 +14,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 
 class RapidGrailsController {
     def exportService
+    def grailsApplication
 
     def addCriteriaMethods() {
         HibernateCriteriaBuilder.metaClass.static.getHibernateDetachedCriteria = {
@@ -342,6 +343,7 @@ class RapidGrailsController {
                     binding.setVariable("obj", it)
                     binding.setVariable("g", g)
                     binding.setVariable("rg", rg)
+                    binding.setVariable("grailsApplication", grailsApplication)
                     def v
                     try {
                         v = gs.evaluate("${expressions[col]}")
