@@ -75,6 +75,13 @@
     left: auto;
     right: 0;
 }
+.pull-left .dropdown-menu{
+    left: 0;
+    right: auto;
+}
+.pull-left .dropdown-menu .dropdown-menu{
+    left: 100%;
+}
 .row-fluid [class*="span"]:first-child {
     margin-right: 0;
     margin-left: 0;
