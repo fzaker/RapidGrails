@@ -312,6 +312,9 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails.plugins/cache/zips/cache-1.1.1.zip!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails.plugins/ws-client/zips/ws-client-1.0.zip!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails.plugins/tomcat/zips/tomcat-2.0.4.zip!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/log4j/log4j/jars/log4j-1.2.14.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sourceforge.jexcelapi/jxl/jars/jxl-2.6.12.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails.plugins/jxl/zips/jxl-0.54.zip!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
