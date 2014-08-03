@@ -88,7 +88,9 @@
     <orderEntry type="library" scope="PROVIDED" name="commons-math-1.0" level="project" />
     <orderEntry type="module" module-name="CargoSpr-grailsPlugins" />
     <orderEntry type="module" module-name="KhavarmianeRegistering-grailsPlugins" />
-    <orderEntry type="module" module-name="EShop-grailsPlugins" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
@@ -338,6 +340,7 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="RapidGrails-grailsPlugins" />
   </component>
 </module>
 
