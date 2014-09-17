@@ -161,17 +161,15 @@ class RapidGrailsController {
                                                     v = (val as String).bytes
                                                 else if (type == String.class)
                                                     v = val as String
-                                                else if (type == Long){
+                                                else if (type == Long) {
                                                     if (val instanceof JSONArray)
                                                         v = val.collect { it.toLong() }
                                                     else {
                                                         v = val as Long
                                                     }
-                                                }
-                                                else if(f.op in ['lt','le'] && type==Date){
-                                                    v=property.type.newInstance(val+' 23:59:59')
-                                                }
-                                                else
+                                                } else if (f.op in ['lt', 'le'] && type == Date) {
+                                                    v = property.type.newInstance(val + ' 23:59:59')
+                                                } else
                                                     v = property.type.newInstance(val)
                                             } catch (e) {
                                                 e.printStackTrace()
@@ -218,7 +216,8 @@ class RapidGrailsController {
                                             }
                                             def aliasFieldProperty = getProperty(tmpDomainClass, stack.pop())
                                             v = assignVal(val, aliasFieldProperty)
-                                        } else if (_domainClass.hasPersistentProperty(f.field)) { // The simple case, f.field is direct field of the class
+                                        } else if (_domainClass.hasPersistentProperty(f.field)) {
+                                            // The simple case, f.field is direct field of the class
                                             def property = _domainClass.getPropertyByName(f.field)
                                             assignVal(val, property)
 
@@ -347,7 +346,9 @@ class RapidGrailsController {
                     def v
                     try {
                         v = gs.evaluate("${expressions[col]}")
-                    } catch (x) { x.printStackTrace() }
+                    } catch (x) {
+                        x.printStackTrace()
+                    }
                     if ((v instanceof Double) || (v instanceof Float))
                         v = String.format("%.2f", v)
                     if (export)
@@ -406,8 +407,12 @@ class RapidGrailsController {
             [id: it.id ?: autoId++, cell: cell]
         }
         if (export) {
-            def colLabels = colNames.collectEntries { def res = [:]; res[it] = message(code: "${domainClass.propertyName}.${it}"); return res }
-            exportService.export("Excel", response, "export", "xls", rows.collect { it.cell }, colNames, colLabels, [:], [:])
+            def colLabels = colNames.collectEntries {
+                def res = [:]; res[it] = message(code: "${domainClass.propertyName}.${it}"); return res
+            }
+            exportService.export("Excel", response, "export", "xls", rows.collect {
+                it.cell
+            }, colNames, colLabels, [:], [:])
         } else
             render([page: page.toString(), total: total, records: records.toString(),
                     rows: rows, userdata: userData] as JSON)
@@ -461,6 +466,7 @@ class RapidGrailsController {
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
         def term = Boolean.parseBoolean(params.like) ? "*${params.term}*" : params.term
         def results = domainClass.clazz.search(term).results
+        results = results.collect{domainClass.clazz.get(it.id)}.findAll { !it.deleted }
         def map = results.collect {
             [id: it.id, label: it.toString(), value: it.toString()]
         }
@@ -536,13 +542,17 @@ class RapidGrailsController {
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
         def relationProperty
         if (params.relationProperty)
-            relationProperty = domainClass.properties.find() { it.name.toLowerCase() == params.relationProperty.toLowerCase() }
+            relationProperty = domainClass.properties.find() {
+                it.name.toLowerCase() == params.relationProperty.toLowerCase()
+            }
         else
             relationProperty = domainClass.properties.find() { it.domainClass == domainClass }
 
         def titleProperty
         if (params.titleProperty)
-            titleProperty = domainClass.properties.find() { it.name.toLowerCase() == params.titleProperty.toLowerCase() }
+            titleProperty = domainClass.properties.find() {
+                it.name.toLowerCase() == params.titleProperty.toLowerCase()
+            }
         else
             titleProperty = domainClass.properties.find() { it.name.toLowerCase() == 'name' }
 
@@ -586,12 +596,16 @@ class RapidGrailsController {
             recordList = domainClass.clazz.createCriteria().list {
                 eq("deleted", false)
                 eq("${relationProperty.name}.id", root.id)
-            }.collect { [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []] }
+            }.collect {
+                [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []]
+            }
         else
             recordList = domainClass.clazz.createCriteria().list {
                 eq("deleted", false)
                 isNull(relationProperty.name)
-            }.collect { [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []] }
+            }.collect {
+                [id: it.id, text: it.properties[titleProperty.name], checked: selectedIds.contains(it.id), state: (openIds.contains(it.id) ? 'open' : 'closed'), children: []]
+            }
 
 
         recordList.each {
