@@ -466,7 +466,9 @@ class RapidGrailsController {
         DefaultGrailsDomainClass domainClass = grailsApplication.getDomainClass(params.domainClass)
         def term = Boolean.parseBoolean(params.like) ? "*${params.term}*" : params.term
         def results = domainClass.clazz.search(term).results
-        results = results.collect{domainClass.clazz.get(it.id)}.findAll { !it.deleted }
+        results = results.collect { domainClass.clazz.get(it.id) }
+        if (domainClass.hasPersistentProperty('deleted'))
+            results = results.findAll { !it.deleted }
         def map = results.collect {
             [id: it.id, label: it.toString(), value: it.toString()]
         }
